@@ -1,5 +1,11 @@
 extends RigidBody2D
 
+@onready var world_width = get_viewport_rect().size[0]
+@onready var world_height = get_viewport_rect().size[1]
+
+################################################################################
+
+# ground and screen subscribe to this
 signal collided
 
 # one shot call on collision
@@ -48,3 +54,11 @@ func get_closest_point_on_polygon(point_to_check: Vector2, polygon_points: Packe
 			closest_point = current_closest_on_segment
 
 	return closest_point
+
+################################################################################
+
+func _physics_process(_delta: float) -> void:
+	
+	# no need for VisibleOnScreenNotifier2D
+	if position.x < 0 or position.x > world_width:
+		queue_free()

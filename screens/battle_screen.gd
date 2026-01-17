@@ -12,11 +12,11 @@ func _ready() -> void:
 	get_tree().current_scene.add_child(new_player)
 	new_player.global_position = Vector2(50, 300)
 	new_player.get_node('BarrelArea').rotation_degrees = -45
-	
+
 
 var has_collision = null
 
-func _on_collided(collision_point, body):
+func _on_collided(collision_point, _body):
 	#print('screen collided ', collision_point)
 	has_collision = collision_point
 	queue_redraw()
@@ -31,7 +31,6 @@ func _draw():
 		draw_circle(has_collision, 2, Color(255,255,255), true)
 	
 	#draw_circle(Vector2(500, 500), 50, Color(255,255,255), false)
-
 
 func draw_grid():
 

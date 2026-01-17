@@ -3,14 +3,21 @@ extends StaticBody2D
 var rng = RandomNumberGenerator.new()
 @onready var world_width = get_viewport_rect().size[0]
 @onready var world_height = get_viewport_rect().size[1]
+var stone_unit = 50.0
 
 
 func _ready() -> void:
 	
 	generate_mountain()
 	
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+
 	generate_indestructible()
-	
+
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+
 	generate_stone()
 	
 	# add trees and plants
@@ -19,8 +26,8 @@ func _ready() -> void:
 func generate_mountain():
 	
 	var points := PackedVector2Array()
-	points.append(Vector2(0, world_height * 5/6))
-	points.append(Vector2(world_width * 4/10, world_height * 5/6))
+	points.append(Vector2(0, world_height * 4/6))
+	points.append(Vector2(world_width * 4/10, world_height * 4/6))
 	points.append(Vector2(world_width * 4/10, world_height * 2/6))
 	points.append(Vector2(world_width * 6/10, world_height * 2/6))
 	points.append(Vector2(world_width * 6/10, world_height * 3/6))
@@ -54,7 +61,7 @@ func generate_indestructible():
 func generate_stone():
 	
 	# TODO the number of stone sections is a function of the campaign level
-	var num_stones = rng.randi_range(1, 3) + 4 #GlobalStats.player.campaign_level
+	var num_stones = rng.randi_range(1, 3) + 10 #GlobalStats.player.campaign_level
 	var center_ls = []
 	
 	for stn in num_stones:
@@ -65,7 +72,8 @@ func generate_stone():
 		
 		var results = create_stone(center_ls)
 		var stone_poly = results[0]
-		center_ls.append(results[1])
+		var center = results[1]
+		center_ls.append(center)
 		
 		var new_fill = Polygon2D.new()
 		new_fill.polygon = stone_poly
@@ -75,22 +83,28 @@ func generate_stone():
 		var new_collision = CollisionPolygon2D.new()
 		new_collision.polygon = stone_poly
 		new_body.add_child(new_collision)
+		
+		var new_sprite = ColorRect.new()
+		new_sprite.size = Vector2(2, 2)
+		new_sprite.global_position = center
+		new_sprite.z_index = 1
+		new_body.add_child(new_sprite)
 
 func create_stone(center_ls):
-	
-	# stone center inside the soil model
-	var center = Vector2(
-		 rng.randi_range(world_width *0.1, world_width *0.9), 
-		 rng.randi_range(world_height *0.3, world_height *0.9), 
-	)
-	while not Geometry2D.is_point_in_polygon(center, $SoilFill.polygon):
-		center = Vector2(
-			rng.randi_range(world_width *0.1, world_width *0.9), 
-			rng.randi_range(world_height *0.3, world_height *0.9), 
-		)
 
+	# stone center inside the soil model
+	var center = Vector2()
+	while true:
+		center = Vector2(
+			 rng.randi_range(world_width *0.1, world_width *0.9), 
+			 rng.randi_range(world_height *0.3, world_height *0.9), 
+		)
+		var is_in_soil = Geometry2D.is_point_in_polygon(center, $SoilFill.polygon)
+		var is_distant = is_far_from_centers(center, center_ls)
+		if is_in_soil and is_distant:
+			break
+	
 	# polygon to set stone shape
-	var stone_unit = 80.0
 	var points := PackedVector2Array()
 	points.append(Vector2(
 		center.x - rng.randi_range(stone_unit/4, stone_unit), 
@@ -111,9 +125,16 @@ func create_stone(center_ls):
 	
 	return [points, center]
 
+func is_far_from_centers(center, center_ls):
+	for ct in center_ls:
+		if center.distance_to(ct) < float(stone_unit):
+			return false
+	return true
 
 
-func _on_collided(collision_point, body):
+################################################################################
+
+func _on_collided(collision_point, _body):
 
 	$DetectionArea.global_position = collision_point
 	$DetectionArea/CollisionShape2D.shape.radius = GlobalStats.player.bomb_radius
