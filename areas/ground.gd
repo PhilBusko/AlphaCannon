@@ -9,14 +9,8 @@ var stone_unit = 50.0
 func _ready() -> void:
 	
 	generate_mountain()
-	
-	await get_tree().physics_frame
-	await get_tree().physics_frame
 
 	generate_indestructible()
-
-	await get_tree().physics_frame
-	await get_tree().physics_frame
 
 	generate_stone()
 	
@@ -64,33 +58,22 @@ func generate_stone():
 	var num_stones = rng.randi_range(1, 3) + 10 #GlobalStats.player.campaign_level
 	var center_ls = []
 	
+	var stone_ref = preload("res://areas/stone.tscn")
+	
 	for stn in num_stones:
 		
-		var new_body = StaticBody2D.new()
-		new_body.name = 'Stone' + str(stn).pad_zeros(2)
-		add_child(new_body)
-		
-		var results = create_stone(center_ls)
+		var results = create_points(center_ls)
 		var stone_poly = results[0]
 		var center = results[1]
 		center_ls.append(center)
 		
-		var new_fill = Polygon2D.new()
-		new_fill.polygon = stone_poly
-		new_fill.color = Color8(90, 90, 120)
-		new_body.add_child(new_fill)
-		
-		var new_collision = CollisionPolygon2D.new()
-		new_collision.polygon = stone_poly
-		new_body.add_child(new_collision)
-		
-		var new_sprite = ColorRect.new()
-		new_sprite.size = Vector2(2, 2)
-		new_sprite.global_position = center
-		new_sprite.z_index = 1
-		new_body.add_child(new_sprite)
+		var new_stone = stone_ref.instantiate()
+		new_stone.get_child(0).polygon = stone_poly
+		new_stone.get_child(1).polygon = stone_poly
+		new_stone.get_child(2).global_position = center
+		add_child(new_stone)
 
-func create_stone(center_ls):
+func create_points(center_ls):
 
 	# stone center inside the soil model
 	var center = Vector2()

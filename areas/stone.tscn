@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://h4a14q03hshv"]
+
+[node name="Stone" type="StaticBody2D"]
+
+[node name="StoneFill" type="Polygon2D" parent="."]
+color = Color(0.3529412, 0.3529412, 0.47058824, 1)
+
+[node name="StoneCollision" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(-29, -30, -29, 28, 33, 28, 35, -32)
+
+[node name="CenterRect" type="ColorRect" parent="."]
+visible = false
+offset_left = -1.0
+offset_top = -1.0
+offset_right = 1.0
+offset_bottom = 1.0
