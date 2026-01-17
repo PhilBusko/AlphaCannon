@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://jmkskmsd5cpp"]
+
+[sub_resource type="Gradient" id="Gradient_45ris"]
+offsets = PackedFloat32Array(0, 0.5277778, 0.6990741, 0.8425926)
+colors = PackedColorArray(0.11764706, 0.5647059, 1, 1, 0.1064069, 0.5587112, 0.9044586, 1, 0, 0.5019608, 0, 1, 0.3529412, 0.1764706, 0.047058824, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_v1gwn"]
+gradient = SubResource("Gradient_45ris")
+fill_to = Vector2(0, 1)
+
+[node name="BackgroundCanvas" type="CanvasLayer"]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_v1gwn")

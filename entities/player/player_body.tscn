@@ -1,0 +1,60 @@
+[gd_scene load_steps=6 format=3 uid="uid://g3g3fnq3l8vg"]
+
+[ext_resource type="Script" uid="uid://buj5qjq4eekrn" path="res://entities/player/player_body.gd" id="1_c65pj"]
+[ext_resource type="PackedScene" uid="uid://c2vskpmkbeola" path="res://entities/player/bullet_body.tscn" id="2_0437v"]
+[ext_resource type="Texture2D" uid="uid://50ajia8j25x7" path="res://entities/sprites/triangle-white.png" id="3_0437v"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0437v"]
+size = Vector2(155, 46.666664)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ejhrd"]
+size = Vector2(80, 65)
+
+[node name="PlayerBody" type="CharacterBody2D"]
+top_level = true
+scale = Vector2(0.6, 0.6)
+floor_max_angle = 1.3089969
+script = ExtResource("1_c65pj")
+bullet_ref = ExtResource("2_0437v")
+
+[node name="BarrelArea" type="Area2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="BarrelArea"]
+offset_left = -35.000004
+offset_top = -23.333332
+offset_right = 120.0
+offset_bottom = 23.333332
+color = Color(0.4509804, 0.4509804, 0.4509804, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BarrelArea"]
+position = Vector2(41.666664, 0)
+shape = SubResource("RectangleShape2D_0437v")
+
+[node name="Marker2D" type="Marker2D" parent="BarrelArea"]
+position = Vector2(100.00001, 0)
+
+[node name="StraightAim" type="Line2D" parent="."]
+visible = false
+width = 6.0
+
+[node name="GravityAim" type="Line2D" parent="."]
+width = 6.0
+default_color = Color(0.5372549, 1, 1, 1)
+
+[node name="GravityAim2" type="Line2D" parent="."]
+width = 6.0
+default_color = Color(0.5372549, 1, 1, 1)
+
+[node name="GravityAim3" type="Line2D" parent="."]
+width = 6.0
+default_color = Color(0.5372549, 1, 1, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.30588236, 0.34901962, 0.39607844, 1)
+position = Vector2(7.6293945e-06, 13.333329)
+scale = Vector2(0.6797386, 0.6797386)
+texture = ExtResource("3_0437v")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 12.500001)
+shape = SubResource("RectangleShape2D_ejhrd")

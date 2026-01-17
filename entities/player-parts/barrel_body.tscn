@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://dewupflult5wd"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gb1tc"]
+radius = 16.666666
+height = 153.33333
+
+[node name="BarrelBody" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 2
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -38.333336
+offset_top = -18.33333
+offset_right = -37.284554
+offset_bottom = -17.45833
+scale = Vector2(136.66667, 39.999996)
+color = Color(0.4392157, 0.5019608, 0.5647059, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(33.333332, 1.5894572e-06)
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_gb1tc")
+
+[node name="Muzzle" type="Marker2D" parent="."]
+position = Vector2(98.33333, 1.5894572e-06)

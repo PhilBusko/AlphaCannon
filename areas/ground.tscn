@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://pmiigiu8l7le"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_x3nny"]
+radius = 188.09
+
+[node name="Ground" type="StaticBody2D"]
+
+[node name="SoilFill" type="Polygon2D" parent="."]
+color = Color(0.54509807, 0.27058825, 0.07450981, 1)
+polygon = PackedVector2Array(-1, 388, -1, 601, 1002, 601, 1002, 388)
+
+[node name="SoilCollision" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(-1, 388, -1, 601, 1001, 601, 1002, 388)
+
+[node name="BottomFill" type="Polygon2D" parent="."]
+color = Color(0.50980395, 0.3529412, 0.3529412, 1)
+
+[node name="BottomCollision" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(-14, 576, -14, 672, 1034, 672, 1032, 577)
+disabled = true
+
+[node name="DetectionArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("CircleShape2D_x3nny")

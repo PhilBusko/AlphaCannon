@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://ck0pjxyd01p13"]
+
+[ext_resource type="PackedScene" uid="uid://dewupflult5wd" path="res://entities/player-parts/barrel_body.tscn" id="1_tc752"]
+[ext_resource type="PackedScene" uid="uid://c0ge4dwfh0wf2" path="res://entities/player-parts/support_body.tscn" id="2_7sa10"]
+
+[node name="Node2D" type="Area2D"]
+
+[node name="BarrelBody" parent="." instance=ExtResource("1_tc752")]
+
+[node name="SupportBody" parent="." instance=ExtResource("2_7sa10")]

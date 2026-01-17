@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://c0ge4dwfh0wf2"]
+
+[ext_resource type="Texture2D" uid="uid://50ajia8j25x7" path="res://entities/sprites/triangle-white.png" id="1_hq70y"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hcpbk"]
+size = Vector2(117, 61)
+
+[node name="SupportBody" type="CharacterBody2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-1.9073486e-06, 13.999998)
+scale = Vector2(0.71568626, 0.71568626)
+texture = ExtResource("1_hq70y")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, 20.5)
+shape = SubResource("RectangleShape2D_hcpbk")
