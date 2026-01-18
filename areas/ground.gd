@@ -3,8 +3,8 @@ extends StaticBody2D
 var rng = RandomNumberGenerator.new()
 @onready var world_width = get_viewport_rect().size[0]
 @onready var world_height = get_viewport_rect().size[1]
+@onready var stone_ref = preload("res://areas/stone.tscn")
 var stone_unit = 50.0
-
 
 func _ready() -> void:
 	
@@ -57,9 +57,7 @@ func generate_stone():
 	# TODO the number of stone sections is a function of the campaign level
 	var num_stones = rng.randi_range(1, 3) + 10 #GlobalStats.player.campaign_level
 	var center_ls = []
-	
-	var stone_ref = preload("res://areas/stone.tscn")
-	
+		
 	for stn in num_stones:
 		
 		var results = create_points(center_ls)
@@ -68,6 +66,7 @@ func generate_stone():
 		center_ls.append(center)
 		
 		var new_stone = stone_ref.instantiate()
+		new_stone.name = 'Stone' + str(stn).pad_zeros(2)
 		new_stone.get_child(0).polygon = stone_poly
 		new_stone.get_child(1).polygon = stone_poly
 		new_stone.get_child(2).global_position = center
@@ -114,61 +113,4 @@ func is_far_from_centers(center, center_ls):
 			return false
 	return true
 
-
 ################################################################################
-
-func _on_collided(collision_point, _body):
-
-	$DetectionArea.global_position = collision_point
-	$DetectionArea/CollisionShape2D.shape.radius = GlobalStats.player.bomb_radius
-
-	# must advance physics frame for detection
-	await get_tree().physics_frame
-	await get_tree().physics_frame
-	await get_tree().physics_frame
-
-	var bodies_in_range = $DetectionArea.get_overlapping_bodies()	
-	for bd in bodies_in_range:
-		if bd == self: 
-			
-			# subtract the area exploded by bomb
-			# the bottom mask is used to mitigate the ground being split into multiple polygons
-			# a polygon must have at least 3 and unique points to be valid
-			
-			var ground_poly = bd.get_child(0).polygon
-			var bomb_poly = generate_circle_polygon(GlobalStats.player.bomb_radius, collision_point, 18)
-			var mask_poly = self.get_child(2).polygon
-			var bomb_mask_poly = Geometry2D.intersect_polygons(bomb_poly, mask_poly)
-			var bomb_filter_poly = bomb_poly
-			if len(bomb_mask_poly) > 0:
-				bomb_filter_poly = Geometry2D.exclude_polygons(bomb_poly, bomb_mask_poly[0])[0]
-			var intersect_poly = Geometry2D.intersect_polygons(ground_poly, bomb_filter_poly)
-			
-			var x_poly = []
-			if len(intersect_poly) > 0 and len(intersect_poly[0]) > 3:
-				x_poly = Geometry2D.exclude_polygons(ground_poly, intersect_poly[0])
-				x_poly = remove_duplicates(x_poly[0])
-				bd.get_child(0).polygon = x_poly
-				bd.get_child(1).polygon = x_poly
-
-			#print('ground ', len(ground_poly))
-			#print('bomb ', len(bomb_poly))
-			#print('mask ', len(mask_poly))
-			#print('bomb_filter ', len(bomb_filter_poly))
-			#print('intersect ', len(intersect_poly[0]) if len(intersect_poly) > 0 else 0)
-			#print('final ', len(x_poly))
-
-func generate_circle_polygon(radius, center, segments):
-	var points = []
-	for i in range(segments):
-		var angle = float(i) / segments * 2.0 * PI
-		var x = radius * cos(angle) + center.x
-		var y = radius * sin(angle) + center.y
-		points.append(Vector2(x, y))
-	return points
-
-func remove_duplicates(points: Array) -> Array:
-	var unique_dict = {}
-	for p in points:
-		unique_dict[p] = true
-	return unique_dict.keys()

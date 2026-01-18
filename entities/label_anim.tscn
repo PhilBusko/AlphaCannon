@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://bw7hcg552u0d2"]
+
+[ext_resource type="Script" uid="uid://df2muioskk7lv" path="res://entities/label_anim.gd" id="1_bhioo"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_5d63u"]
+font_size = 24
+outline_size = 1
+
+[node name="LabelAnim" type="Control"]
+z_index = 2
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_bhioo")
+
+[node name="Label" type="Label" parent="."]
+modulate = Color(0.8627451, 0.078431375, 0.23529412, 1)
+layout_mode = 0
+offset_left = -20.0
+offset_top = -40.0
+offset_right = 20.0
+text = "99"
+label_settings = SubResource("LabelSettings_5d63u")
+horizontal_alignment = 1
+vertical_alignment = 1

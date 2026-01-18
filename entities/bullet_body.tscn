@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://c2vskpmkbeola"]
 
-[ext_resource type="Script" uid="uid://k0d4rcbrjeyj" path="res://entities/player/bullet_body.gd" id="1_jsq82"]
+[ext_resource type="Script" uid="uid://k0d4rcbrjeyj" path="res://entities/bullet_body.gd" id="1_jsq82"]
 
 [sub_resource type="Gradient" id="Gradient_3uyv8"]
 interpolation_mode = 1

@@ -20,10 +20,14 @@ func _on_body_entered(body):
 	if 'polygon' in body.get_child(0):
 		var closest_point = get_closest_point_on_polygon(collision_point, body.get_child(0).polygon)
 		collision_corrected = (collision_point + closest_point) / 2.0
-
 	#print(collision_point)
 	#print(collision_corrected)
-	collided.emit(collision_corrected, body)
+
+	if has_meta('shooter'):
+		var shooter = get_meta('shooter')
+		collided.emit(collision_corrected, body, shooter)
+	else:
+		print('ERROR: no shooter set on bullet')
 
 	# delete this bullet
 	queue_free()

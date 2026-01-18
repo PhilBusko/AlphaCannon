@@ -40,9 +40,3 @@ var enemy_level1 = {
 	'wounds': 0,
 	'color_mask': null,
 }
-
-var materials ={
-	'plant': 1,
-	'soil': 5,
-	'stone': 10,
-}

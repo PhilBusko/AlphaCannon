@@ -1,7 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://pmiigiu8l7le"]
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_x3nny"]
-radius = 29.546574
+[gd_scene format=3 uid="uid://pmiigiu8l7le"]
 
 [node name="Ground" type="StaticBody2D"]
 
@@ -18,8 +15,3 @@ color = Color(0.50980395, 0.3529412, 0.3529412, 1)
 [node name="BottomCollision" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(-14, 576, -14, 672, 1034, 672, 1032, 577)
 disabled = true
-
-[node name="DetectionArea" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
-shape = SubResource("CircleShape2D_x3nny")

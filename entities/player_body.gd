@@ -1,19 +1,25 @@
 extends CharacterBody2D
 
+const bullet_ref = preload('res://entities/bullet_body.tscn')
+const label_ref = preload('res://entities/label_anim.tscn')
+
 var rng = RandomNumberGenerator.new()
+@onready var level_scene = get_tree().current_scene
 
 const SPEED = 300.0
-@export var bullet_ref : PackedScene
 
+################################################################################
 
+func _physics_process(delta):
 
-func _ready():
-	#print($CollisionShape2D.polygon)
-	pass
+	player_movement(delta)
+	
+	player_aiming()
+	
+	shoot_bullet()
 
-
-func _physics_process(delta: float) -> void:
-
+func player_movement(delta):
+	
 	# gravity
 	if not is_on_floor():
 		velocity += get_gravity() * delta
@@ -34,14 +40,14 @@ func _physics_process(delta: float) -> void:
 	# move after data updates
 	move_and_slide()
 
+func player_aiming():
+
 	# change cannon angle
 	var radians = 0.02
 	if Input.is_action_pressed('angle_left'):
 		$BarrelArea.rotate(-radians)
 	if Input.is_action_pressed('angle_right'):
 		$BarrelArea.rotate(radians)
-
-
 
 	# change cannon power
 	if Input.is_action_pressed('power_up'):
@@ -53,12 +59,11 @@ func _physics_process(delta: float) -> void:
 		if GlobalStats.player.power_curr < GlobalStats.player.power_min: 
 			GlobalStats.player.power_curr = GlobalStats.player.power_min
 
+func shoot_bullet():
 
-
-	# shoot bullet
 	if Input.is_action_just_pressed('shoot'):
 		var new_bullet = bullet_ref.instantiate()
-		get_tree().current_scene.add_child(new_bullet)
+		level_scene.add_child(new_bullet)
 		
 		new_bullet.global_position = $BarrelArea/Marker2D.global_position
 		var barrel_dir = Vector2.RIGHT.rotated($BarrelArea.rotation)
@@ -68,13 +73,13 @@ func _physics_process(delta: float) -> void:
 			GlobalStats.player.power_curr *(1+perc_range)
 		)
 		new_bullet.apply_central_impulse(barrel_dir * random_power)
+		new_bullet.set_meta('shooter', {
+			'actor': 'player',
+			'bomb_radius': GlobalStats.player.bomb_radius,
+			'bomb_damage': GlobalStats.player.bomb_damage,
+		})
 
-		var target_node = get_tree().root.find_child('Ground', true, false)
-		new_bullet.collided.connect(target_node._on_collided)
-
-		target_node = get_tree().root.find_child('BattleScreen', true, false)
-		new_bullet.collided.connect(target_node._on_collided)
-
+		new_bullet.collided.connect(level_scene._on_bullet_collided)
 
 func _process(delta):
 
@@ -115,8 +120,7 @@ func _process(delta):
 	#for pnt in predict_points:
 		#$GravityAim3.add_point(to_local(pnt))
 
-
-func predict_path(start_pos, start_vel, steps=50, time_step=0.05):
+func predict_path(start_pos, start_vel, steps, time_step):
 	var path_points = []
 	var current_pos = start_pos
 	var current_vel = start_vel
@@ -147,3 +151,19 @@ func predict_path(start_pos, start_vel, steps=50, time_step=0.05):
 			break
 
 	return path_points
+
+################################################################################
+
+func _on_damaged(damage):
+	
+	# TODO take damage onto player
+	
+	
+	# display damage animation
+	var new_label = label_ref.instantiate()
+	level_scene.add_child(new_label)
+	new_label.global_position = Vector2(
+		self.global_position.x,
+		$BarrelArea/Marker2D.global_position.y - 20
+	)
+	new_label.show_damage(damage)
