@@ -12,6 +12,7 @@ func _ready() -> void:
 	# this could trigger on signal from ground, so ground can spawn first
 	# spawn player
 	var new_player = player_ref.instantiate()
+	#new_player.actor_data = GlobalStats.player
 	add_child(new_player)
 	new_player.global_position = Vector2(50, 300)
 	new_player.get_node('BarrelArea').rotation_degrees = -45
@@ -19,9 +20,12 @@ func _ready() -> void:
 
 	# spawn enemy
 	var new_enemy = enemy_ref.instantiate()
+	new_enemy.actor_data = GlobalStats.enemy_level1
 	add_child(new_enemy)
 	new_enemy.global_position = Vector2(1050, 300)
 	self.enemy_damaged.connect(new_enemy._on_damaged)
+	
+
 
 ################################################################################
 

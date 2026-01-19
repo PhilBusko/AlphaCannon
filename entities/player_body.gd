@@ -2,8 +2,9 @@ extends CharacterBody2D
 
 const bullet_ref = preload('res://entities/bullet_body.tscn')
 const label_ref = preload('res://entities/label_anim.tscn')
+const bullet_texture = preload('res://entities/sprites/bullet-white.png')
 
-var rng = RandomNumberGenerator.new()
+@onready var random = RandomNumberGenerator.new()
 @onready var level_scene = get_tree().current_scene
 
 const SPEED = 300.0
@@ -63,22 +64,26 @@ func shoot_bullet():
 
 	if Input.is_action_just_pressed('shoot'):
 		var new_bullet = bullet_ref.instantiate()
+		new_bullet.get_child(0).texture = bullet_texture
+		new_bullet.get_child(0).scale = Vector2(0.3, 0.3)
+		new_bullet.get_child(0).modulate = Color8(100, 0, 0)
+		new_bullet.global_rotation = $BarrelArea.rotation
 		level_scene.add_child(new_bullet)
-		
 		new_bullet.global_position = $BarrelArea/Marker2D.global_position
+		
 		var barrel_dir = Vector2.RIGHT.rotated($BarrelArea.rotation)
 		var perc_range = 0.0 #GlobalStats.player.power_range
-		var random_power = rng.randi_range(
+		var random_power = random.randi_range(
 			GlobalStats.player.power_curr *(1-perc_range), 
 			GlobalStats.player.power_curr *(1+perc_range)
 		)
 		new_bullet.apply_central_impulse(barrel_dir * random_power)
-		new_bullet.set_meta('shooter', {
+		
+		new_bullet.shooter_data = {
 			'actor': 'player',
 			'bomb_radius': GlobalStats.player.bomb_radius,
 			'bomb_damage': GlobalStats.player.bomb_damage,
-		})
-
+		}
 		new_bullet.collided.connect(level_scene._on_bullet_collided)
 
 func _process(delta):

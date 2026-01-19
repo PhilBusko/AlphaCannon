@@ -1,5 +1,7 @@
 extends RigidBody2D
 
+var shooter_data = {}
+
 @onready var world_width = get_viewport_rect().size[0]
 @onready var world_height = get_viewport_rect().size[1]
 
@@ -23,11 +25,7 @@ func _on_body_entered(body):
 	#print(collision_point)
 	#print(collision_corrected)
 
-	if has_meta('shooter'):
-		var shooter = get_meta('shooter')
-		collided.emit(collision_corrected, body, shooter)
-	else:
-		print('ERROR: no shooter set on bullet')
+	collided.emit(collision_corrected, body, shooter_data)
 
 	# delete this bullet
 	queue_free()
@@ -62,6 +60,8 @@ func get_closest_point_on_polygon(point_to_check: Vector2, polygon_points: Packe
 ################################################################################
 
 func _physics_process(_delta: float) -> void:
+	
+	self.global_rotation = self.linear_velocity.angle()
 	
 	# no need for VisibleOnScreenNotifier2D
 	if position.x < 0 or position.x > world_width:

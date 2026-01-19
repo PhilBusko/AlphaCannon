@@ -1,21 +1,22 @@
 extends StaticBody2D
 
-var rng = RandomNumberGenerator.new()
+const stone_ref = preload('res://areas/stone.tscn')
+const stone_unit = 50.0
+
+@onready var random = RandomNumberGenerator.new()
 @onready var world_width = get_viewport_rect().size[0]
 @onready var world_height = get_viewport_rect().size[1]
-@onready var stone_ref = preload("res://areas/stone.tscn")
-var stone_unit = 50.0
 
 func _ready() -> void:
-	
+
 	generate_mountain()
 
 	generate_indestructible()
 
 	generate_stone()
-	
+
 	# add trees and plants
-	
+
 
 func generate_mountain():
 	
@@ -55,9 +56,9 @@ func generate_indestructible():
 func generate_stone():
 	
 	# TODO the number of stone sections is a function of the campaign level
-	var num_stones = rng.randi_range(1, 3) + 10 #GlobalStats.player.campaign_level
+	var num_stones = random.randi_range(1, 3) + 12 #GlobalStats.player.campaign_level
 	var center_ls = []
-		
+
 	for stn in num_stones:
 		
 		var results = create_points(center_ls)
@@ -78,8 +79,8 @@ func create_points(center_ls):
 	var center = Vector2()
 	while true:
 		center = Vector2(
-			 rng.randi_range(world_width *0.1, world_width *0.9), 
-			 rng.randi_range(world_height *0.3, world_height *0.9), 
+			 random.randi_range(world_width *0.1, world_width *0.9), 
+			 random.randi_range(world_height *0.3, world_height *0.9), 
 		)
 		var is_in_soil = Geometry2D.is_point_in_polygon(center, $SoilFill.polygon)
 		var is_distant = is_far_from_centers(center, center_ls)
@@ -89,20 +90,20 @@ func create_points(center_ls):
 	# polygon to set stone shape
 	var points := PackedVector2Array()
 	points.append(Vector2(
-		center.x - rng.randi_range(stone_unit/4, stone_unit), 
-		center.y - rng.randi_range(stone_unit/4, stone_unit), 
+		center.x - random.randi_range(int(stone_unit/4), int(stone_unit)), 
+		center.y - random.randi_range(int(stone_unit/4), int(stone_unit)), 
 	))
 	points.append(Vector2(
-		center.x + rng.randi_range(stone_unit/4, stone_unit), 
-		center.y - rng.randi_range(stone_unit/4, stone_unit), 
+		center.x + random.randi_range(int(stone_unit/4), int(stone_unit)), 
+		center.y - random.randi_range(int(stone_unit/4), int(stone_unit)), 
 	))
 	points.append(Vector2(
-		center.x + rng.randi_range(stone_unit/4, stone_unit), 
-		center.y + rng.randi_range(stone_unit/4, stone_unit), 
+		center.x + random.randi_range(int(stone_unit/4), int(stone_unit)), 
+		center.y + random.randi_range(int(stone_unit/4), int(stone_unit)), 
 	))
 	points.append(Vector2(
-		center.x - rng.randi_range(stone_unit/2, stone_unit), 
-		center.y + rng.randi_range(stone_unit/2, stone_unit), 
+		center.x - random.randi_range(int(stone_unit/4), int(stone_unit)), 
+		center.y + random.randi_range(int(stone_unit/4), int(stone_unit)), 
 	))
 	
 	return [points, center]

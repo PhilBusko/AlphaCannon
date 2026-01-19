@@ -7,7 +7,7 @@ var player = {
 	'power_range': 0.2,
 
 	'bomb_damage': 20,
-	'bomb_radius': 50,
+	'bomb_radius': 30,
 	'aim_points': 30,
 	'move_limit': 0,
 
@@ -28,8 +28,8 @@ var player_level1 = {
 var enemy_ls = []
 
 var enemy_level1 = {
-	'power_curr': 700,
-	'angle_curr': -45,
+	'power_curr': 900,
+	'angle_curr': 135,
 
 	'power_range': 0.3,
 	'bomb_damage': 20,
