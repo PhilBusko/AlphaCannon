@@ -28,8 +28,8 @@ var player_level1 = {
 var enemy_ls = []
 
 var enemy_level1 = {
-	'power_curr': 900,
-	'angle_curr': 135,
+	'power_curr': 1200,
+	'angle_curr': 45,
 
 	'power_range': 0.3,
 	'bomb_damage': 20,

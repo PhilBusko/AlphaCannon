@@ -1,5 +1,9 @@
 extends Node2D
 
+@onready var random = RandomNumberGenerator.new()
+@onready var world_width = get_viewport_rect().size[0]
+@onready var world_height = get_viewport_rect().size[1]
+
 ################################################################################
 
 const player_ref = preload('res://entities/player_body.tscn')
@@ -14,7 +18,10 @@ func _ready() -> void:
 	var new_player = player_ref.instantiate()
 	#new_player.actor_data = GlobalStats.player
 	add_child(new_player)
-	new_player.global_position = Vector2(50, 300)
+	new_player.global_position = Vector2(
+		random.randi_range(50, world_width *1/4),
+		300,
+	)
 	new_player.get_node('BarrelArea').rotation_degrees = -45
 	self.player_damaged.connect(new_player._on_damaged)
 
@@ -22,9 +29,11 @@ func _ready() -> void:
 	var new_enemy = enemy_ref.instantiate()
 	new_enemy.actor_data = GlobalStats.enemy_level1
 	add_child(new_enemy)
-	new_enemy.global_position = Vector2(1050, 300)
+	new_enemy.global_position = Vector2(
+		random.randi_range(world_width *3/4, world_width -50), 
+		300,
+	)
 	self.enemy_damaged.connect(new_enemy._on_damaged)
-	
 
 
 ################################################################################
@@ -43,7 +52,6 @@ func _on_bullet_collided(collision_point, collision_body, shooter):
 	queue_redraw()
 
 	# explode any ground and entities
-	
 	$DetectionArea.global_position = collision_point
 	$DetectionArea/CollisionShape2D.shape.radius = shooter.bomb_radius
 
@@ -118,7 +126,8 @@ func _draw():
 	# draw with graphics to debug
 	# available on node2d and canvasitem, draws on layer 0
 	#draw_grid()
-	pass
+	draw_thirds()
+	
 	if has_collision:
 		draw_circle(has_collision, collision_radius, Color(255,255,255), false)
 		draw_circle(has_collision, 2, Color(255,255,255), true)
@@ -141,4 +150,23 @@ func draw_grid():
 	# Draw horizontal lines
 	for i in range(int(top_left.y / GRID_SIZE) - 1, int(bottom_right.y / GRID_SIZE) + 2):
 		var y_pos = i * GRID_SIZE
+		draw_line(Vector2(top_left.x, y_pos), Vector2(bottom_right.x, y_pos), COLOR)
+
+func draw_thirds():
+
+	# draw grid for debugging
+	var GRID_X = get_viewport_rect().size[0] / 3
+	var GRID_Y = get_viewport_rect().size[1] / 3
+	const COLOR = Color(255, 255, 255) 
+	var top_left = Vector2.ZERO
+	var bottom_right = Vector2(get_viewport_rect().size[0], get_viewport_rect().size[1])
+
+	# Draw vertical lines
+	for i in range(int(top_left.x / GRID_X) - 1, int(bottom_right.x / GRID_X) + 2):
+		var x_pos = i * GRID_X
+		draw_line(Vector2(x_pos, top_left.y), Vector2(x_pos, bottom_right.y), COLOR)
+
+	# Draw horizontal lines
+	for i in range(int(top_left.y / GRID_Y) - 1, int(bottom_right.y / GRID_Y) + 2):
+		var y_pos = i * GRID_Y
 		draw_line(Vector2(top_left.x, y_pos), Vector2(bottom_right.x, y_pos), COLOR)

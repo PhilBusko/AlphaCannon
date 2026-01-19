@@ -9,9 +9,7 @@ var actor_data = {}
 
 
 func _ready():
-	print(actor_data)
 	$BarrelArea.rotation_degrees = actor_data.angle_curr
-	
 	$ReloadTimer.wait_time = actor_data.reload_time
 	$ReloadTimer.start()
 	
@@ -24,7 +22,6 @@ func _physics_process(delta: float) -> void:
 	enemy_movement(delta)
 	
 	
-
 
 
 func enemy_movement(delta):
@@ -41,6 +38,7 @@ func _on_reload_timeout() -> void:
 	
 	var new_bullet = bullet_ref.instantiate()
 	level_scene.add_child(new_bullet)
+	
 	new_bullet.global_position = $BarrelArea/MuzzleMarker.global_position
 	var barrel_dir = Vector2.LEFT.rotated($BarrelArea.global_rotation)
 	var perc_range = 0 #actor_data.power_range
@@ -49,12 +47,12 @@ func _on_reload_timeout() -> void:
 		actor_data.power_curr *(1+perc_range)
 	)
 	new_bullet.apply_central_impulse(barrel_dir * random_power)
-	new_bullet.set_meta('shooter', {
+	
+	new_bullet.shooter_data = {
 		'actor': 'enemy',
 		'bomb_radius': actor_data.bomb_radius,
 		'bomb_damage': actor_data.bomb_damage,
-	})
-
+	}
 	new_bullet.collided.connect(level_scene._on_bullet_collided)
 	
 	# start reloading the next

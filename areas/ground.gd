@@ -21,13 +21,32 @@ func _ready() -> void:
 func generate_mountain():
 	
 	var points := PackedVector2Array()
-	points.append(Vector2(0, world_height * 4/6))
-	points.append(Vector2(world_width * 4/10, world_height * 4/6))
-	points.append(Vector2(world_width * 4/10, world_height * 2/6))
-	points.append(Vector2(world_width * 6/10, world_height * 2/6))
-	points.append(Vector2(world_width * 6/10, world_height * 3/6))
-	points.append(Vector2(world_width * 10/10, world_height * 3/6))
+	#points.append(Vector2(0, world_height * 4/6))
+	#points.append(Vector2(world_width * 4/10, world_height * 4/6))
+	#points.append(Vector2(world_width * 4/10, world_height * 2/6))
+	#points.append(Vector2(world_width * 6/10, world_height * 2/6))
+	#points.append(Vector2(world_width * 6/10, world_height * 3/6))
+	#points.append(Vector2(world_width * 10/10, world_height * 3/6))
 	
+	var current_x = 0
+	var x_unit = 50
+	
+	while current_x < (world_width + x_unit):
+		
+		var current_y_min = world_height * 0.6
+		var current_y_max = world_height * 0.8
+		
+		if current_x > world_width/3 and current_x < world_width * 2/3:
+			current_y_min = world_height * 0.1
+			current_y_max = world_height * 0.6
+		
+		points.append(Vector2(
+			current_x, 
+			random.randi_range(current_y_min, current_y_max),
+		))
+		var x_incr = x_unit + random.randi_range(0, x_unit)
+		current_x += x_incr
+
 	points.append(Vector2(world_width, world_height))
 	points.append(Vector2(0, world_height))
 	
@@ -54,9 +73,9 @@ func generate_indestructible():
 	$BottomCollision.polygon = bottom_mask
 
 func generate_stone():
-	
-	# TODO the number of stone sections is a function of the campaign level
-	var num_stones = random.randi_range(1, 3) + 12 #GlobalStats.player.campaign_level
+
+	# number of stones is based on the campaign level
+	var num_stones = 20 + int(GlobalStats.player.campaign_level/4) + random.randi_range(1, 4)
 	var center_ls = []
 
 	for stn in num_stones:

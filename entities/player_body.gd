@@ -100,7 +100,7 @@ func _process(delta):
 
 	# draw gravity based trajectory
 
-	var num_points = 80
+	var num_points = 20
 	var current_pos: Vector2 = $BarrelArea/Marker2D.global_position
 	var current_vel: Vector2 = Vector2.RIGHT.rotated($BarrelArea.global_rotation) * GlobalStats.player.power_curr
 	var predict_points = predict_path(current_pos, current_vel, num_points, delta)
