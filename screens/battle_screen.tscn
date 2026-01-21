@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://df1u2fpfs0njc"]
 
 [ext_resource type="Script" uid="uid://dlux0lp2xh2aa" path="res://screens/battle_screen.gd" id="1_lhwch"]
-[ext_resource type="PackedScene" uid="uid://pmiigiu8l7le" path="res://areas/ground.tscn" id="2_lhwch"]
-[ext_resource type="Script" uid="uid://bqra5m0t1wmtf" path="res://areas/ground.gd" id="3_nrq4m"]
+[ext_resource type="PackedScene" uid="uid://pmiigiu8l7le" path="res://areas/terrain.tscn" id="2_lhwch"]
+[ext_resource type="PackedScene" uid="uid://c7yx6oymgs4e4" path="res://interfaces/debug_mouse.tscn" id="4_qpt1m"]
 [ext_resource type="PackedScene" uid="uid://jmkskmsd5cpp" path="res://areas/background.tscn" id="5_lhwch"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_qpt1m"]
@@ -15,13 +15,12 @@ metadata/_edit_lock_ = true
 [node name="BackgroundCanvas" parent="." instance=ExtResource("5_lhwch")]
 layer = -5
 
-[node name="Ground" parent="." instance=ExtResource("2_lhwch")]
-z_index = -3
-position = Vector2(1, 7)
-script = ExtResource("3_nrq4m")
-metadata/_edit_lock_ = true
+[node name="TerrainNode" parent="." instance=ExtResource("2_lhwch")]
 
 [node name="DetectionArea" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
 shape = SubResource("CircleShape2D_qpt1m")
+
+[node name="DebugMouse" parent="." instance=ExtResource("4_qpt1m")]
+visible = false

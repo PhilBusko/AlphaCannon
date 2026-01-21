@@ -24,8 +24,12 @@ func _on_body_entered(body):
 		collision_corrected = (collision_point + closest_point) / 2.0
 	#print(collision_point)
 	#print(collision_corrected)
-
-	collided.emit(collision_corrected, body, shooter_data)
+	
+	var collision_truc = Vector2(
+		round(collision_corrected.x),
+		round(collision_corrected.y),
+	)
+	collided.emit(collision_truc, body, shooter_data)
 
 	# delete this bullet
 	queue_free()

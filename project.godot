@@ -21,8 +21,8 @@ GlobalStats="*res://entities/global_stats.gd"
 
 [display]
 
-window/size/viewport_width=1800
-window/size/viewport_height=800
+window/size/viewport_width=1400
+window/size/viewport_height=600
 window/stretch/mode="viewport"
 
 [input]

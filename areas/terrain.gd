@@ -1,4 +1,4 @@
-extends StaticBody2D
+extends Node2D
 
 const stone_ref = preload('res://areas/stone.tscn')
 const stone_unit = 50.0
@@ -11,9 +11,9 @@ func _ready() -> void:
 
 	generate_mountain()
 
-	generate_indestructible()
+	generate_underground()
 
-	generate_stone()
+	#generate_stone()
 
 	# add trees and plants
 
@@ -47,13 +47,13 @@ func generate_mountain():
 		var x_incr = x_unit + random.randi_range(0, x_unit)
 		current_x += x_incr
 
-	points.append(Vector2(world_width, world_height))
-	points.append(Vector2(0, world_height))
+	points.append(Vector2(world_width +50, world_height +200))
+	points.append(Vector2(-50, world_height +200))
 	
-	$SoilFill.polygon = points
-	$SoilCollision.polygon = points
+	$Mountain00/SoilFill.polygon = points
+	$Mountain00/SoilCollision.polygon = points
 
-func generate_indestructible():
+func generate_underground():
 	
 	var bottom_mask := PackedVector2Array()
 	var half_hill = 50
@@ -69,8 +69,8 @@ func generate_indestructible():
 
 	bottom_mask.append(Vector2(world_width +50, world_height +50))
 	bottom_mask.append(Vector2(-50, world_height +50))
-	$BottomFill.polygon = bottom_mask
-	$BottomCollision.polygon = bottom_mask
+	$Underground/BottomFill.polygon = bottom_mask
+	$Underground/BottomCollision.polygon = bottom_mask
 
 func generate_stone():
 
@@ -101,7 +101,7 @@ func create_points(center_ls):
 			 random.randi_range(world_width *0.1, world_width *0.9), 
 			 random.randi_range(world_height *0.3, world_height *0.9), 
 		)
-		var is_in_soil = Geometry2D.is_point_in_polygon(center, $SoilFill.polygon)
+		var is_in_soil = Geometry2D.is_point_in_polygon(center, $Mountain00/SoilFill.polygon)
 		var is_distant = is_far_from_centers(center, center_ls)
 		if is_in_soil and is_distant:
 			break

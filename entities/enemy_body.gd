@@ -11,7 +11,7 @@ var actor_data = {}
 func _ready():
 	$BarrelArea.rotation_degrees = actor_data.angle_curr
 	$ReloadTimer.wait_time = actor_data.reload_time
-	$ReloadTimer.start()
+	#$ReloadTimer.start()
 	
 
 

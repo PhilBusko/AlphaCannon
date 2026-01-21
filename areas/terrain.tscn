@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://pmiigiu8l7le"]
+
+[ext_resource type="Script" uid="uid://bqra5m0t1wmtf" path="res://areas/terrain.gd" id="1_oehg2"]
+
+[node name="TerrainNode" type="Node2D"]
+z_index = -2
+script = ExtResource("1_oehg2")
+
+[node name="Mountain00" type="StaticBody2D" parent="."]
+collision_layer = 3
+collision_mask = 3
+
+[node name="SoilFill" type="Polygon2D" parent="Mountain00"]
+color = Color(0.54509807, 0.27058825, 0.07450981, 1)
+polygon = PackedVector2Array(-1, 388, -1, 601, 1002, 601, 1002, 388)
+
+[node name="SoilCollision" type="CollisionPolygon2D" parent="Mountain00"]
+build_mode = 1
+polygon = PackedVector2Array(-1, 388, -1, 601, 1001, 601, 1002, 388)
+
+[node name="Underground" type="StaticBody2D" parent="."]
+
+[node name="BottomFill" type="Polygon2D" parent="Underground"]
+color = Color(0.50980395, 0.3529412, 0.3529412, 1)
+
+[node name="BottomCollision" type="CollisionPolygon2D" parent="Underground"]
+build_mode = 1
+polygon = PackedVector2Array(-14, 576, -14, 672, 1034, 672, 1032, 577)
