@@ -85,17 +85,26 @@ func _on_bullet_collided(collision_point, collision_body, shooter):
 			#):
 				#print('collision error')
 
-			handle_mountain(collision_point, shooter, bd)
-	
+			var mountain_res = handle_mountain(collision_point, shooter, bd, 'exc')
+			
+			if not mountain_res and has_underground == false:
+				#print('scatter collision-point')
+				
+				var new_collision = Vector2(collision_point.x +3, collision_point.y +3)
+				mountain_res = handle_mountain(new_collision, shooter, bd, 'clip')
+				
+				if not mountain_res:
+					new_collision = Vector2(collision_point.x -3, collision_point.y -3)
+					mountain_res = handle_mountain(new_collision, shooter, bd, 'clip')
+
 	# mark the screen for debug
 	has_collision = collision_point
 	collision_radius = shooter.bomb_radius
 	queue_redraw()
 
+func handle_mountain(collision_point, shooter, curr_bd, mode):
 
-func handle_mountain(collision_point, shooter, curr_bd):
-
-	#prints('starting', curr_bd.name, curr_bd.get_child(1).polygon.size())
+	#prints('start', mode, curr_bd.name, curr_bd.get_child(1).polygon.size())
 
 	# subtract the area exploded by bomb
 	# a polygon must have at least 3 and unique points to be valid
@@ -104,9 +113,9 @@ func handle_mountain(collision_point, shooter, curr_bd):
 	var bomb_poly = generate_circle_polygon(shooter.bomb_radius, collision_point, 18)
 	var intersect_poly = Geometry2D.intersect_polygons(ground_poly, bomb_poly)
 
-	if ground_poly.size() <= 3:
+	if ground_poly.size() <= 10:
 		curr_bd.queue_free()
-		return
+		return true
 
 	if len(intersect_poly) == 0:
 		#print('no inters')
@@ -131,16 +140,26 @@ func handle_mountain(collision_point, shooter, curr_bd):
 
 	var x_poly = []
 	if len(intersect_poly) > 3:
-		x_poly = Geometry2D.exclude_polygons(ground_poly, intersect_poly)
+		
+		if mode == 'exc':
+			x_poly = Geometry2D.exclude_polygons(ground_poly, intersect_poly)
+		else:
+			x_poly = Geometry2D.clip_polygons(ground_poly, intersect_poly)
 		#print('x-poly parts ', len(x_poly))
-	
+
 		if len(x_poly) == 0:
 			#print('delete ', curr_bd.name)
 			curr_bd.queue_free()
-	
+
 		elif len(x_poly) == 1:
 			x_poly = remove_duplicates(x_poly[0])
 			x_poly = remove_stragglers(x_poly, collision_point, shooter.bomb_radius)
+			
+			# bug where exclude-polygons doesn't subtract bomb area at all
+			if x_poly.size() == curr_bd.get_child(1).polygon.size():
+				#prints('single error found', x_poly.size(), curr_bd.get_child(1).polygon.size())
+				return false
+
 			#prints('single assign', curr_bd.name, len(x_poly))
 			curr_bd.get_child(0).set_deferred('polygon', x_poly)
 			curr_bd.get_child(1).set_deferred('polygon', x_poly)
@@ -152,12 +171,22 @@ func handle_mountain(collision_point, shooter, curr_bd):
 				
 				var curr_poly = remove_duplicates(xprt)
 				curr_poly = remove_stragglers(curr_poly, collision_point, shooter.bomb_radius)
-
-				# there is a bug sometimes where the subtracted area is also returned
-				if len(curr_poly) <= 3 or len(curr_poly) == len(intersect_poly):
-					#prints('skipping len', len(curr_poly))
+				
+				# bug where sometimes exclude-polygons doesn't subtract bomb area at all
+				if curr_poly.size() == curr_bd.get_child(1).polygon.size():
+					#prints('multi error found', curr_bd.get_child(1).polygon.size(), curr_poly.size())
+					return false
+				
+				# bug where sometimes exclude-polygons returns invalid polygons
+				if len(curr_poly) <= 3:
+					#prints('skipping minor', len(curr_poly))
 					continue
 				
+				# bug where sometimes the subtracted area is also returned as a polygon
+				if abs(len(curr_poly) - len(intersect_poly)) <= 1:
+					#prints('skipping inters', len(curr_poly))
+					continue
+
 				if main_assigned == 0:
 					#prints('multi assign', curr_bd.name, curr_poly.size())
 					curr_bd.get_child(0).set_deferred('polygon', curr_poly)
@@ -172,6 +201,8 @@ func handle_mountain(collision_point, shooter, curr_bd):
 					new_copy.get_child(0).set_deferred('polygon', curr_poly)
 					new_copy.get_child(1).set_deferred('polygon', curr_poly)
 					$TerrainNode.add_child(new_copy)
+					
+	return true
 
 func generate_circle_polygon(radius, center, segments):
 	var points = []
@@ -202,11 +233,16 @@ func remove_stragglers(check_poly, collision_point, radius):
 		var is_straggler = false
 		if cpt.distance_to(collision_point) < check_radius:
 			is_straggler = true
-			prints('straggler found', cpt, collision_point)
+			#prints('straggler found', cpt, collision_point)
 		if not is_straggler:
 			non_stragglers.append(cpt)
-	return non_stragglers
+	
+	# this clips the side of the bomb area
+	#for cpt in non_stragglers:
+		#if cpt.distance_to(collision_point) <= radius:
+			#prints('outer straggler found', cpt, cpt.distance_to(collision_point))
 
+	return non_stragglers
 
 ################################################################################
 
@@ -224,7 +260,6 @@ func _draw():
 	#points.append(Vector2(200, 200))
 	#points.append(Vector2(100, 200))
 	#draw_polygon(points, [Color(1,1,1)])
-	
 	
 	if len(has_intersect) >= 3:
 		draw_polygon(has_intersect, [Color(0,0,0, 0.2)])
