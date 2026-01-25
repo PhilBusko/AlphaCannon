@@ -16,8 +16,7 @@ scale = Vector2(0.2920406, 0.29901958)
 texture = ExtResource("2_7l40u")
 
 [node name="SupportCollision" type="CollisionPolygon2D" parent="."]
-visible = false
-polygon = PackedVector2Array(-15, 0, -15, -28, -61, -28, -61, -59, 59, -59, 59, -29, 15, -29, 15, 0)
+polygon = PackedVector2Array(-15, 0, -15, -28, -30, -28, -29, -42, 29, -42, 27, -29, 15, -29, 15, 0)
 metadata/_edit_lock_ = true
 
 [node name="BarrelArea" type="Area2D" parent="."]

@@ -1,6 +1,7 @@
 extends RigidBody2D
 
 var shooter_data = {}
+var enemy_source = null
 
 @onready var world_width = get_viewport_rect().size[0]
 @onready var world_height = get_viewport_rect().size[1]
@@ -25,11 +26,14 @@ func _on_body_entered(body):
 	#print(collision_point)
 	#print(collision_corrected)
 	
-	var collision_truc = Vector2(
+	var collision_trunc = Vector2(
 		round(collision_corrected.x),
 		round(collision_corrected.y),
 	)
-	collided.emit(collision_truc, body, shooter_data)
+	collided.emit(collision_trunc, body, shooter_data)
+	
+	if enemy_source:
+		enemy_source.bullet_landed(collision_trunc, body)
 
 	# delete this bullet
 	queue_free()
@@ -69,4 +73,6 @@ func _physics_process(_delta: float) -> void:
 	
 	# no need for VisibleOnScreenNotifier2D
 	if position.x < 0 or position.x > world_width:
+		if enemy_source:
+			enemy_source.bullet_landed(global_position, null)
 		queue_free()

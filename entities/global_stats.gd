@@ -28,14 +28,18 @@ var player_level1 = {
 var enemy_ls = []
 
 var enemy_level1 = {
-	'power_curr': 1200,
-	'angle_curr': 45,
+	'power_curr': 1100,
+	'angle_curr': 60,
+	'orientation': null,
+	'target_player': null,
+	'shots_taken': 1,
+	'last_bullet_result': null,
 
-	'power_range': 0.3,
+	'power_range': 0.0,
 	'bomb_damage': 20,
 	'bomb_radius': 30,
 
-	'reload_time': 4.0,
+	'reload_time': 3.0,
 	'health': 100,
 	'wounds': 0,
 	'color_mask': null,

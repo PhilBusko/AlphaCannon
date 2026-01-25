@@ -64,6 +64,7 @@ func shoot_bullet():
 
 	if Input.is_action_just_pressed('shoot'):
 		var new_bullet = bullet_ref.instantiate()
+		new_bullet.name = "BulletPlayer"
 		new_bullet.get_child(0).texture = bullet_texture
 		new_bullet.get_child(0).scale = Vector2(0.3, 0.3)
 		new_bullet.get_child(0).modulate = Color8(100, 0, 0)

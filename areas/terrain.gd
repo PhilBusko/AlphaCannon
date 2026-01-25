@@ -13,7 +13,7 @@ func _ready() -> void:
 
 	generate_underground()
 
-	#generate_stone()
+	generate_stone()
 
 	# add trees and plants
 

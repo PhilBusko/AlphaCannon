@@ -19,7 +19,7 @@ func _ready() -> void:
 	#new_player.actor_data = GlobalStats.player
 	add_child(new_player)
 	new_player.global_position = Vector2(
-		random.randi_range(50, world_width *1/4),
+		random.randi_range(100, world_width *1/4),
 		300,
 	)
 	new_player.get_node('BarrelArea').rotation_degrees = -45
@@ -30,10 +30,18 @@ func _ready() -> void:
 	new_enemy.actor_data = GlobalStats.enemy_level1
 	add_child(new_enemy)
 	new_enemy.global_position = Vector2(
-		random.randi_range(world_width *3/4, world_width -50), 
+		random.randi_range(world_width *3/4, world_width -100), 
+		#(world_width *3/4 + world_width -50)/2, 
 		300,
 	)
 	self.enemy_damaged.connect(new_enemy._on_damaged)
+	
+	# initialize enemy AI
+	new_enemy.actor_data.target_player = new_player
+	new_enemy.actor_data.orientation = 'left'
+	if new_player.global_position.x > new_enemy.global_position.x:
+		new_enemy.actor_data.orientation = 'right'
+
 
 ################################################################################
 
@@ -261,8 +269,8 @@ func _draw():
 	#points.append(Vector2(100, 200))
 	#draw_polygon(points, [Color(1,1,1)])
 	
-	if len(has_intersect) >= 3:
-		draw_polygon(has_intersect, [Color(0,0,0, 0.2)])
+	#if len(has_intersect) >= 3:
+		#draw_polygon(has_intersect, [Color(0,0,0, 0.2)])
 	
 	if has_collision:
 		draw_circle(has_collision, collision_radius, Color(0,0,0), false)
