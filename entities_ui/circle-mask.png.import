@@ -1,0 +1,16 @@
+[remap]
+
+importer="bitmap"
+type="BitMap"
+uid="uid://cnmum7gkq3del"
+path="res://.godot/imported/circle-mask.png-1d1a9886f0f439c6724d933f0b8355d4.res"
+
+[deps]
+
+source_file="res://entities_ui/circle-mask.png"
+dest_files=["res://.godot/imported/circle-mask.png-1d1a9886f0f439c6724d933f0b8355d4.res"]
+
+[params]
+
+create_from=0
+threshold=0.5

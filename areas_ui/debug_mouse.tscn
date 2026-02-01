@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://c7yx6oymgs4e4"]
 
-[ext_resource type="Script" uid="uid://duysnj8mn8qb8" path="res://interfaces/debug_mouse.gd" id="1_ohbpj"]
+[ext_resource type="Script" uid="uid://duysnj8mn8qb8" path="res://areas_ui/debug_mouse.gd" id="1_ohbpj"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ohbpj"]
 font_color = Color(0, 0, 0, 1)

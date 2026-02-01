@@ -36,6 +36,20 @@ shape = SubResource("RectangleShape2D_7l40u")
 [node name="MuzzleMarker" type="Marker2D" parent="BarrelArea"]
 position = Vector2(-68, -1)
 
+[node name="AimMarker" type="Marker2D" parent="BarrelArea"]
+position = Vector2(-53, -1)
+
 [node name="ReloadTimer" type="Timer" parent="."]
+
+[node name="AimLine" type="Line2D" parent="."]
+width = 4.0
+
+[node name="AimLineNeg" type="Line2D" parent="."]
+width = 4.0
+default_color = Color(0.3529412, 0.3529412, 0.3529412, 1)
+
+[node name="AimLinePos" type="Line2D" parent="."]
+width = 4.0
+default_color = Color(0.23529412, 0.23529412, 0.23529412, 1)
 
 [connection signal="timeout" from="ReloadTimer" to="." method="_on_reload_timeout"]

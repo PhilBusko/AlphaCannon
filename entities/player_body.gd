@@ -1,11 +1,13 @@
 extends CharacterBody2D
 
 const bullet_ref = preload('res://entities/bullet_body.tscn')
-const label_ref = preload('res://entities/label_anim.tscn')
+const label_ref = preload('res://entities_ui/damage_label.tscn')
 const bullet_texture = preload('res://entities/sprites/bullet-white.png')
+var bullets_shot = 0
 
 @onready var random = RandomNumberGenerator.new()
 @onready var level_scene = get_tree().current_scene
+var ui_link = null
 
 const SPEED = 300.0
 
@@ -46,9 +48,9 @@ func player_aiming():
 	# change cannon angle
 	var radians = 0.02
 	if Input.is_action_pressed('angle_left'):
-		$BarrelArea.rotate(-radians)
+		$PlayerBarrel.rotate(-radians)
 	if Input.is_action_pressed('angle_right'):
-		$BarrelArea.rotate(radians)
+		$PlayerBarrel.rotate(radians)
 
 	# change cannon power
 	if Input.is_action_pressed('power_up'):
@@ -63,16 +65,17 @@ func player_aiming():
 func shoot_bullet():
 
 	if Input.is_action_just_pressed('shoot'):
+		bullets_shot += 1
 		var new_bullet = bullet_ref.instantiate()
-		new_bullet.name = "BulletPlayer"
+		new_bullet.name = 'BulletPlayer' + str(bullets_shot).pad_zeros(3)
 		new_bullet.get_child(0).texture = bullet_texture
 		new_bullet.get_child(0).scale = Vector2(0.3, 0.3)
 		new_bullet.get_child(0).modulate = Color8(100, 0, 0)
-		new_bullet.global_rotation = $BarrelArea.rotation
+		new_bullet.global_rotation = $PlayerBarrel.rotation
 		level_scene.add_child(new_bullet)
-		new_bullet.global_position = $BarrelArea/Marker2D.global_position
+		new_bullet.global_position = $PlayerBarrel/Marker2D.global_position
 		
-		var barrel_dir = Vector2.RIGHT.rotated($BarrelArea.rotation)
+		var barrel_dir = Vector2.RIGHT.rotated($PlayerBarrel.rotation)
 		var perc_range = 0.0 #GlobalStats.player.power_range
 		var random_power = random.randi_range(
 			GlobalStats.player.power_curr *(1-perc_range), 
@@ -93,8 +96,8 @@ func _process(delta):
 	# must map to the local position of the line
 
 	var line_length = 500
-	var start_point = $BarrelArea/Marker2D.global_position #+ Vector2.RIGHT * 100
-	var end_point = start_point + Vector2.RIGHT.rotated($BarrelArea.global_rotation) * line_length
+	var start_point = $PlayerBarrel/Marker2D.global_position #+ Vector2.RIGHT * 100
+	var end_point = start_point + Vector2.RIGHT.rotated($PlayerBarrel.global_rotation) * line_length
 	$StraightAim.clear_points()
 	$StraightAim.add_point(to_local(start_point))
 	$StraightAim.add_point(to_local(end_point))
@@ -102,24 +105,24 @@ func _process(delta):
 	# draw gravity based trajectory
 
 	var num_points = 50
-	var current_pos: Vector2 = $BarrelArea/Marker2D.global_position
-	var current_vel: Vector2 = Vector2.RIGHT.rotated($BarrelArea.global_rotation) * GlobalStats.player.power_curr
+	var current_pos: Vector2 = $PlayerBarrel/Marker2D.global_position
+	var current_vel: Vector2 = Vector2.RIGHT.rotated($PlayerBarrel.global_rotation) * GlobalStats.player.power_curr
 	var predict_points = predict_path(current_pos, current_vel, num_points, delta)
 
 	$GravityAim.clear_points()
 	for pnt in predict_points:
 		$GravityAim.add_point(to_local(pnt))
 
-	#current_pos = $BarrelArea/Marker2D.global_position
-	#current_vel = Vector2.RIGHT.rotated($BarrelArea.global_rotation) * cannon_power * 0.9
+	#current_pos = $PlayerBarrel/Marker2D.global_position
+	#current_vel = Vector2.RIGHT.rotated($PlayerBarrel.global_rotation) * cannon_power * 0.9
 	#predict_points = predict_path(current_pos, current_vel, num_points, delta)
 #
 	#$GravityAim2.clear_points()
 	#for pnt in predict_points:
 		#$GravityAim2.add_point(to_local(pnt))
 #
-	#current_pos = $BarrelArea/Marker2D.global_position
-	#current_vel = Vector2.RIGHT.rotated($BarrelArea.global_rotation) * cannon_power * 1.1
+	#current_pos = $PlayerBarrel/Marker2D.global_position
+	#current_vel = Vector2.RIGHT.rotated($PlayerBarrel.global_rotation) * cannon_power * 1.1
 	#predict_points = predict_path(current_pos, current_vel, num_points, delta)
 #
 	#$GravityAim3.clear_points()
@@ -130,7 +133,7 @@ func predict_path(start_pos, start_vel, steps, time_step):
 	var path_points = []
 	var current_pos = start_pos
 	var current_vel = start_vel
-	var linear_damp = 0.002
+	var linear_damp = 0.001
 	#var space_state = get_world_2d().direct_space_state # Or PhysicsServer2D.get_space_state()
 
 	for i in range(steps):
@@ -160,16 +163,16 @@ func predict_path(start_pos, start_vel, steps, time_step):
 
 ################################################################################
 
-func _on_damaged(damage):
-	
-	# TODO take damage onto player
-	
+func _on_damaged(_damage, collision_point):
+
+	pass
+	#ui_link.show_damage(damage)
 	
 	# display damage animation
-	var new_label = label_ref.instantiate()
-	level_scene.add_child(new_label)
-	new_label.global_position = Vector2(
-		self.global_position.x,
-		$BarrelArea/Marker2D.global_position.y - 20
-	)
-	new_label.show_damage(damage)
+	#var new_label = label_ref.instantiate()
+	#level_scene.add_child(new_label)
+	#new_label.global_position = Vector2(
+		#self.global_position.x,
+		#$PlayerBarrel/Marker2D.global_position.y - 20
+	#)
+	#new_label.show_damage(damage)

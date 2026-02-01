@@ -1,0 +1,65 @@
+[gd_scene load_steps=7 format=3 uid="uid://dn5a16udyb7me"]
+
+[ext_resource type="Script" uid="uid://foa8oj6kwn12" path="res://entities_ui/player_ui.gd" id="1_vl5w0"]
+[ext_resource type="Texture2D" uid="uid://d07e2v3pbg5wx" path="res://entities/sprites/circle-white.png" id="2_1l8do"]
+[ext_resource type="Script" uid="uid://df2muioskk7lv" path="res://entities_ui/damage_label.gd" id="2_vmoke"]
+[ext_resource type="BitMap" uid="uid://cnmum7gkq3del" path="res://entities_ui/circle-mask.png" id="3_vmoke"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ekf2x"]
+font_size = 24
+font_color = Color(0.8627451, 0.078431375, 0.23529412, 1)
+outline_size = 1
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hw2vi"]
+atlas = ExtResource("2_1l8do")
+
+[node name="UIAnchorNode" type="Node2D"]
+top_level = true
+script = ExtResource("1_vl5w0")
+
+[node name="WrapperVBox" type="VBoxContainer" parent="."]
+offset_left = -14.0
+offset_top = -72.0
+offset_right = 26.0
+offset_bottom = -24.0
+
+[node name="HighHBox" type="HBoxContainer" parent="WrapperVBox"]
+layout_mode = 2
+
+[node name="DamageLabel" type="Label" parent="WrapperVBox/HighHBox"]
+layout_mode = 2
+text = "99"
+label_settings = SubResource("LabelSettings_ekf2x")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("2_vmoke")
+
+[node name="TopHBox" type="HBoxContainer" parent="WrapperVBox"]
+layout_mode = 2
+
+[node name="AngleLeftButton" type="TextureButton" parent="WrapperVBox/TopHBox"]
+layout_mode = 2
+
+[node name="MiddleHBox" type="HBoxContainer" parent="WrapperVBox"]
+layout_mode = 2
+
+[node name="HealthProgressBar" type="TextureProgressBar" parent="WrapperVBox/MiddleHBox"]
+layout_mode = 2
+
+[node name="BottomHBox" type="HBoxContainer" parent="WrapperVBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="ShootButton" type="TextureButton" parent="WrapperVBox/BottomHBox"]
+layout_mode = 2
+texture_normal = ExtResource("2_1l8do")
+texture_pressed = SubResource("AtlasTexture_hw2vi")
+texture_click_mask = ExtResource("3_vmoke")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ActionProgressBar" type="TextureProgressBar" parent="WrapperVBox/BottomHBox"]
+layout_mode = 2
+fill_mode = 4
+
+[node name="ActionTimer" type="Timer" parent="WrapperVBox/BottomHBox"]

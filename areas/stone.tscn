@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://h4a14q03hshv"]
 
 [node name="Stone" type="StaticBody2D"]
+collision_layer = 3
+collision_mask = 3
 
 [node name="StoneFill" type="Polygon2D" parent="."]
 color = Color(0.3529412, 0.3529412, 0.47058824, 1)

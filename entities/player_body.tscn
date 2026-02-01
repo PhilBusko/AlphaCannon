@@ -3,41 +3,42 @@
 [ext_resource type="Script" uid="uid://buj5qjq4eekrn" path="res://entities/player_body.gd" id="1_1oa7j"]
 [ext_resource type="Texture2D" uid="uid://d07e2v3pbg5wx" path="res://entities/sprites/circle-white.png" id="2_vaomu"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_0437v"]
-size = Vector2(155, 46.666664)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vaomu"]
+size = Vector2(150, 46.666664)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vaomu"]
 radius = 31.666666
 
 [node name="PlayerBody" type="CharacterBody2D"]
-top_level = true
+z_index = -1
 scale = Vector2(0.6, 0.6)
 floor_max_angle = 1.3089969
 script = ExtResource("1_1oa7j")
 
-[node name="BarrelArea" type="CharacterBody2D" parent="."]
+[node name="PlayerBarrel" type="CharacterBody2D" parent="."]
 collision_layer = 2
 collision_mask = 2
 
-[node name="BarrelFill" type="ColorRect" parent="BarrelArea"]
+[node name="BarrelFill" type="ColorRect" parent="PlayerBarrel"]
 offset_left = -45.0
 offset_top = -23.333332
 offset_right = 110.0
 offset_bottom = 23.333332
 color = Color(0, 0, 0.5019608, 1)
 
-[node name="BarrelCollision" type="CollisionShape2D" parent="BarrelArea"]
-position = Vector2(33.333332, 0)
-shape = SubResource("RectangleShape2D_0437v")
+[node name="BarrelCollision" type="CollisionShape2D" parent="PlayerBarrel"]
+position = Vector2(30, 0)
+shape = SubResource("RectangleShape2D_vaomu")
 
-[node name="Marker2D" type="Marker2D" parent="BarrelArea"]
-position = Vector2(100.00001, 0)
+[node name="Marker2D" type="Marker2D" parent="PlayerBarrel"]
+position = Vector2(135, 0)
 
 [node name="StraightAim" type="Line2D" parent="."]
 visible = false
 width = 6.0
 
 [node name="GravityAim" type="Line2D" parent="."]
+visible = false
 width = 6.0
 default_color = Color(0.5372549, 1, 1, 1)
 
@@ -58,6 +59,10 @@ texture = ExtResource("2_vaomu")
 [node name="SupportCollision" type="CollisionShape2D" parent="."]
 position = Vector2(0, 28.333332)
 shape = SubResource("CircleShape2D_vaomu")
+
+[node name="UIRemote" type="RemoteTransform2D" parent="."]
+update_rotation = false
+update_scale = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 enabled = false

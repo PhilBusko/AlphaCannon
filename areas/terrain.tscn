@@ -19,6 +19,8 @@ build_mode = 1
 polygon = PackedVector2Array(-1, 388, -1, 601, 1001, 601, 1002, 388)
 
 [node name="Underground" type="StaticBody2D" parent="."]
+collision_layer = 3
+collision_mask = 3
 
 [node name="BottomFill" type="Polygon2D" parent="Underground"]
 color = Color(0.50980395, 0.3529412, 0.3529412, 1)

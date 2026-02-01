@@ -6,8 +6,9 @@ extends Node2D
 
 ################################################################################
 
-const player_ref = preload('res://entities/player_body.tscn')
-const enemy_ref = preload('res://entities/enemy_body.tscn')
+const player_body = preload('res://entities/player_body.tscn')
+const player_ui = preload('res://entities_ui/player_ui.tscn')
+const enemy_body = preload('res://entities/enemy_body.tscn')
 
 func _ready() -> void:
 
@@ -15,32 +16,40 @@ func _ready() -> void:
 	
 	# this could trigger on signal from ground, so ground can spawn first
 	# spawn player
-	var new_player = player_ref.instantiate()
-	#new_player.actor_data = GlobalStats.player
-	add_child(new_player)
-	new_player.global_position = Vector2(
+	var new_player_body = player_body.instantiate()
+	add_child(new_player_body)
+	new_player_body.global_position = Vector2(
 		random.randi_range(100, world_width *1/4),
+		#(100 + world_width *1/4)/2,
 		300,
 	)
-	new_player.get_node('BarrelArea').rotation_degrees = -45
-	self.player_damaged.connect(new_player._on_damaged)
+	new_player_body.get_node('PlayerBarrel').rotation_degrees = -45
+
+	# player ui
+	var new_player_ui = player_ui.instantiate()
+	add_child(new_player_ui)
+	new_player_body.get_node('UIRemote').remote_path = new_player_ui.get_path()
 
 	# spawn enemy
-	var new_enemy = enemy_ref.instantiate()
-	new_enemy.actor_data = GlobalStats.enemy_level1
-	add_child(new_enemy)
-	new_enemy.global_position = Vector2(
+	var new_enemy_body = enemy_body.instantiate()
+	new_enemy_body.actor_data = GlobalStats.enemy_level1
+	add_child(new_enemy_body)
+	new_enemy_body.global_position = Vector2(
 		random.randi_range(world_width *3/4, world_width -100), 
-		#(world_width *3/4 + world_width -50)/2, 
+		#(world_width *3/4 + world_width -100)/2, 
 		300,
 	)
-	self.enemy_damaged.connect(new_enemy._on_damaged)
-	
+
 	# initialize enemy AI
-	new_enemy.actor_data.target_player = new_player
-	new_enemy.actor_data.orientation = 'left'
-	if new_player.global_position.x > new_enemy.global_position.x:
-		new_enemy.actor_data.orientation = 'right'
+	new_enemy_body.actor_data.target_player = new_player_body
+	new_enemy_body.actor_data.orientation = 'left'
+	if new_player_body.global_position.x > new_enemy_body.global_position.x:
+		new_enemy_body.actor_data.orientation = 'right'
+	
+	# the scene detects a hit and passes the info to bodies hit
+	self.player_damaged.connect(new_player_body._on_damaged)
+	self.player_damaged.connect(new_player_ui._on_damaged)
+	self.enemy_damaged.connect(new_enemy_body._on_damaged)
 
 
 ################################################################################
@@ -73,16 +82,16 @@ func _on_bullet_collided(collision_point, collision_body, shooter):
 	for bd in bodies_in_range:
 
 		if 'Enemy' in bd.name and bd == collision_body:
-			enemy_damaged.emit(shooter.bomb_damage)
-			
+			enemy_damaged.emit(shooter.bomb_damage, collision_point)
+
 		elif 'Enemy' in bd.name:
-			enemy_damaged.emit(int(shooter.bomb_damage /2))
-			
-		if bd.name == 'PlayerBody' and bd == collision_body:
-			player_damaged.emit(shooter.bomb_damage)
-			
-		elif bd.name == 'PlayerBody':
-			player_damaged.emit(int(shooter.bomb_damage /2))
+			enemy_damaged.emit(int(shooter.bomb_damage /2), collision_point)
+
+		if 'Player' in bd.name and bd == collision_body:
+			player_damaged.emit(shooter.bomb_damage, collision_point)
+
+		elif 'Player' in bd.name:
+			player_damaged.emit(int(shooter.bomb_damage /2), collision_point)
 
 		if 'Mountain' in bd.name:
 			
@@ -236,7 +245,7 @@ func remove_duplicates(points: Array) -> Array:
 
 func remove_stragglers(check_poly, collision_point, radius):
 	var non_stragglers = []
-	var check_radius = radius -1
+	var check_radius = radius -3
 	for cpt in check_poly:
 		var is_straggler = false
 		if cpt.distance_to(collision_point) < check_radius:
@@ -276,7 +285,14 @@ func _draw():
 		draw_circle(has_collision, collision_radius, Color(0,0,0), false)
 		draw_circle(has_collision, 2, Color(0,0,0), true)
 	
-	#draw_circle(Vector2(500, 500), 50, Color(255,255,255), false)
+	#var circle_ct = Vector2($PlayerBody.global_position.x -140, $PlayerBody.global_position.y)
+	#draw_circle(circle_ct, 4, Color(0,255,0), true)
+	#
+	#circle_ct = Vector2($PlayerBody.global_position.x +140, $PlayerBody.global_position.y)
+	#draw_circle(circle_ct, 4, Color(0,255,0), true)
+#
+	#circle_ct = Vector2($EnemyBody.global_position.x -300, $PlayerBody.global_position.y)
+	#draw_circle(circle_ct, 4, Color(0,0,255), true)
 
 func draw_grid():
 

@@ -17,12 +17,13 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-GlobalStats="*res://entities/global_stats.gd"
+GlobalStats="*res://global/global_stats.gd"
+Utility="*res://global/utility.gd"
 
 [display]
 
-window/size/viewport_width=1400
-window/size/viewport_height=600
+window/size/viewport_width=1600
+window/size/viewport_height=700
 window/stretch/mode="viewport"
 
 [input]
