@@ -1,30 +1,122 @@
-[gd_scene load_steps=7 format=3 uid="uid://dn5a16udyb7me"]
+[gd_scene load_steps=38 format=3 uid="uid://dn5a16udyb7me"]
 
 [ext_resource type="Script" uid="uid://foa8oj6kwn12" path="res://entities_ui/player_ui.gd" id="1_vl5w0"]
-[ext_resource type="Texture2D" uid="uid://d07e2v3pbg5wx" path="res://entities/sprites/circle-white.png" id="2_1l8do"]
 [ext_resource type="Script" uid="uid://df2muioskk7lv" path="res://entities_ui/damage_label.gd" id="2_vmoke"]
-[ext_resource type="BitMap" uid="uid://cnmum7gkq3del" path="res://entities_ui/circle-mask.png" id="3_vmoke"]
+[ext_resource type="Texture2D" uid="uid://bjl0i4r3ogwme" path="res://entities_ui/sprites/fire-normal.png" id="3_6yyis"]
+[ext_resource type="Texture2D" uid="uid://uypvqn1wnk7a" path="res://entities_ui/sprites/chevron-normal.png" id="3_gexhg"]
+[ext_resource type="Texture2D" uid="uid://cwev4ng1d62gv" path="res://entities_ui/sprites/fire-pressed.png" id="4_a0jgq"]
+[ext_resource type="Texture2D" uid="uid://exr0q00lvywg" path="res://entities_ui/sprites/chevron-pressed.png" id="4_i4e48"]
+[ext_resource type="Texture2D" uid="uid://cwlhvxk2btxln" path="res://entities_ui/sprites/chevron-focus.png" id="5_derkl"]
+[ext_resource type="Texture2D" uid="uid://cc0lu1ssl8edm" path="res://entities_ui/sprites/fire-focus.png" id="5_k82hx"]
+[ext_resource type="BitMap" uid="uid://wbfn5qjljv1" path="res://entities_ui/sprites/chevron-mask.png" id="6_dvqht"]
+[ext_resource type="Texture2D" uid="uid://2rtjgmyb8522" path="res://entities_ui/sprites/fire-disabled.png" id="6_sp0nd"]
+[ext_resource type="BitMap" uid="uid://cb62dxc02vwcf" path="res://entities_ui/sprites/fire-mask.png" id="7_6yyis"]
+[ext_resource type="Texture2D" uid="uid://dqxd0uwpwc2c8" path="res://entities_ui/sprites/angle-icon.png" id="7_dvqht"]
+[ext_resource type="Texture2D" uid="uid://qivq4fmrw7pl" path="res://entities_ui/sprites/power-icon.png" id="8_wisua"]
+[ext_resource type="Texture2D" uid="uid://fja6b1hwkllu" path="res://entities_ui/sprites/move-normal.png" id="9_s26w0"]
+[ext_resource type="Texture2D" uid="uid://05tul25uyjrd" path="res://entities_ui/sprites/move-pressed.png" id="10_gexhg"]
+[ext_resource type="Texture2D" uid="uid://dep4f4m25kxlx" path="res://entities_ui/sprites/move-focus.png" id="11_wqrfe"]
+[ext_resource type="Texture2D" uid="uid://cxlrdcn3juox2" path="res://entities_ui/sprites/move-disabled.png" id="12_i4e48"]
+[ext_resource type="BitMap" uid="uid://dj062xjbjqak3" path="res://entities_ui/sprites/move-mask.png" id="13_derkl"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ekf2x"]
 font_size = 24
 font_color = Color(0.8627451, 0.078431375, 0.23529412, 1)
 outline_size = 1
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_hw2vi"]
-atlas = ExtResource("2_1l8do")
+[sub_resource type="InputEventAction" id="InputEventAction_q84mh"]
+action = &"ui_left"
+
+[sub_resource type="Shortcut" id="Shortcut_ad3a6"]
+events = [SubResource("InputEventAction_q84mh")]
+
+[sub_resource type="InputEventAction" id="InputEventAction_ldg3p"]
+action = &"ui_right"
+
+[sub_resource type="Shortcut" id="Shortcut_o0v2w"]
+events = [SubResource("InputEventAction_ldg3p")]
+
+[sub_resource type="InputEventAction" id="InputEventAction_o8x66"]
+action = &"ui_up"
+
+[sub_resource type="Shortcut" id="Shortcut_ds7s4"]
+events = [SubResource("InputEventAction_o8x66")]
+
+[sub_resource type="InputEventAction" id="InputEventAction_1rse5"]
+action = &"ui_down"
+
+[sub_resource type="Shortcut" id="Shortcut_x2b2w"]
+events = [SubResource("InputEventAction_1rse5")]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s26w0"]
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8627451, 0.8627451, 0.8627451, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gexhg"]
+bg_color = Color(0.15686275, 0.5882353, 0.15686275, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0.8627451, 0.8627451, 0.8627451, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="InputEventAction" id="InputEventAction_wisua"]
+action = &"move_left"
+
+[sub_resource type="Shortcut" id="Shortcut_q84mh"]
+events = [SubResource("InputEventAction_wisua")]
+
+[sub_resource type="InputEventAction" id="InputEventAction_dvqht"]
+action = &"shoot"
+
+[sub_resource type="Shortcut" id="Shortcut_wisua"]
+events = [SubResource("InputEventAction_dvqht")]
+
+[sub_resource type="InputEventAction" id="InputEventAction_s26w0"]
+action = &"move_right"
+
+[sub_resource type="Shortcut" id="Shortcut_gexhg"]
+events = [SubResource("InputEventAction_s26w0")]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wqrfe"]
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i4e48"]
+bg_color = Color(0.19607843, 0.19607843, 0.19607843, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0, 0, 0, 1)
 
 [node name="UIAnchorNode" type="Node2D"]
 top_level = true
 script = ExtResource("1_vl5w0")
 
 [node name="WrapperVBox" type="VBoxContainer" parent="."]
-offset_left = -14.0
-offset_top = -72.0
-offset_right = 26.0
-offset_bottom = -24.0
+offset_left = -99.0
+offset_top = -63.0
+offset_right = 97.0
+offset_bottom = 133.0
+theme_override_constants/separation = 10
 
 [node name="HighHBox" type="HBoxContainer" parent="WrapperVBox"]
 layout_mode = 2
+size_flags_horizontal = 4
+alignment = 1
 
 [node name="DamageLabel" type="Label" parent="WrapperVBox/HighHBox"]
 layout_mode = 2
@@ -36,30 +128,181 @@ script = ExtResource("2_vmoke")
 
 [node name="TopHBox" type="HBoxContainer" parent="WrapperVBox"]
 layout_mode = 2
+theme_override_constants/separation = 140
 
-[node name="AngleLeftButton" type="TextureButton" parent="WrapperVBox/TopHBox"]
+[node name="VBoxContainer" type="VBoxContainer" parent="WrapperVBox/TopHBox"]
 layout_mode = 2
+theme_override_constants/separation = 0
 
-[node name="MiddleHBox" type="HBoxContainer" parent="WrapperVBox"]
+[node name="AngleUpButton" type="TextureButton" parent="WrapperVBox/TopHBox/VBoxContainer"]
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
-
-[node name="HealthProgressBar" type="TextureProgressBar" parent="WrapperVBox/MiddleHBox"]
-layout_mode = 2
-
-[node name="BottomHBox" type="HBoxContainer" parent="WrapperVBox"]
-layout_mode = 2
-alignment = 1
-
-[node name="ShootButton" type="TextureButton" parent="WrapperVBox/BottomHBox"]
-layout_mode = 2
-texture_normal = ExtResource("2_1l8do")
-texture_pressed = SubResource("AtlasTexture_hw2vi")
-texture_click_mask = ExtResource("3_vmoke")
+focus_mode = 0
+action_mode = 0
+button_mask = 3
+shortcut = SubResource("Shortcut_ad3a6")
+texture_normal = ExtResource("3_gexhg")
+texture_pressed = ExtResource("4_i4e48")
+texture_hover = ExtResource("5_derkl")
+texture_click_mask = ExtResource("6_dvqht")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="ActionProgressBar" type="TextureProgressBar" parent="WrapperVBox/BottomHBox"]
+[node name="AngleIcon" type="TextureRect" parent="WrapperVBox/TopHBox/VBoxContainer"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
-fill_mode = 4
+texture = ExtResource("7_dvqht")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="ActionTimer" type="Timer" parent="WrapperVBox/BottomHBox"]
+[node name="AngleDownButton" type="TextureButton" parent="WrapperVBox/TopHBox/VBoxContainer"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+focus_mode = 0
+action_mode = 0
+button_mask = 3
+shortcut = SubResource("Shortcut_o0v2w")
+texture_normal = ExtResource("3_gexhg")
+texture_pressed = ExtResource("4_i4e48")
+texture_hover = ExtResource("5_derkl")
+texture_click_mask = ExtResource("6_dvqht")
+ignore_texture_size = true
+stretch_mode = 0
+flip_v = true
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="WrapperVBox/TopHBox"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 2
+
+[node name="PowerUpButton" type="TextureButton" parent="WrapperVBox/TopHBox/VBoxContainer2"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+focus_mode = 0
+button_mask = 3
+shortcut = SubResource("Shortcut_ds7s4")
+texture_normal = ExtResource("3_gexhg")
+texture_pressed = ExtResource("4_i4e48")
+texture_hover = ExtResource("5_derkl")
+texture_click_mask = ExtResource("6_dvqht")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="PowerIcon" type="TextureRect" parent="WrapperVBox/TopHBox/VBoxContainer2"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture = ExtResource("8_wisua")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PowerDownButton" type="TextureButton" parent="WrapperVBox/TopHBox/VBoxContainer2"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+focus_mode = 0
+button_mask = 3
+shortcut = SubResource("Shortcut_x2b2w")
+texture_normal = ExtResource("3_gexhg")
+texture_pressed = ExtResource("4_i4e48")
+texture_hover = ExtResource("5_derkl")
+texture_click_mask = ExtResource("6_dvqht")
+ignore_texture_size = true
+stretch_mode = 0
+flip_v = true
+
+[node name="MiddleHBox" type="HBoxContainer" parent="WrapperVBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="HealthProgressBar" type="ProgressBar" parent="WrapperVBox/MiddleHBox"]
+custom_minimum_size = Vector2(100, 10)
+layout_mode = 2
+theme_override_constants/outline_size = 10
+theme_override_styles/background = SubResource("StyleBoxFlat_s26w0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gexhg")
+value = 70.0
+show_percentage = false
+
+[node name="BottomHBox" type="HBoxContainer" parent="WrapperVBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="MoveLeftButton" type="TextureButton" parent="WrapperVBox/BottomHBox"]
+custom_minimum_size = Vector2(40, 20)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_mode = 0
+action_mode = 0
+button_mask = 3
+shortcut = SubResource("Shortcut_q84mh")
+texture_normal = ExtResource("9_s26w0")
+texture_pressed = ExtResource("10_gexhg")
+texture_hover = ExtResource("11_wqrfe")
+texture_disabled = ExtResource("12_i4e48")
+texture_click_mask = ExtResource("13_derkl")
+ignore_texture_size = true
+stretch_mode = 0
+flip_h = true
+
+[node name="ShootButton" type="TextureButton" parent="WrapperVBox/BottomHBox"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+focus_mode = 0
+action_mode = 0
+button_mask = 3
+shortcut = SubResource("Shortcut_wisua")
+texture_normal = ExtResource("3_6yyis")
+texture_pressed = ExtResource("4_a0jgq")
+texture_hover = ExtResource("5_k82hx")
+texture_disabled = ExtResource("6_sp0nd")
+texture_click_mask = ExtResource("7_6yyis")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="MoveRightButton" type="TextureButton" parent="WrapperVBox/BottomHBox"]
+custom_minimum_size = Vector2(40, 20)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_mode = 0
+action_mode = 0
+button_mask = 3
+shortcut = SubResource("Shortcut_gexhg")
+texture_normal = ExtResource("9_s26w0")
+texture_pressed = ExtResource("10_gexhg")
+texture_hover = ExtResource("11_wqrfe")
+texture_disabled = ExtResource("12_i4e48")
+texture_click_mask = ExtResource("13_derkl")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ReloadHBox" type="HBoxContainer" parent="WrapperVBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="ActionProgressBar" type="ProgressBar" parent="WrapperVBox/ReloadHBox"]
+custom_minimum_size = Vector2(70, 6)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_wqrfe")
+theme_override_styles/fill = SubResource("StyleBoxFlat_i4e48")
+value = 50.0
+show_percentage = false
+
+[node name="ActionTimer" type="Timer" parent="WrapperVBox/ReloadHBox"]
+
+[connection signal="button_down" from="WrapperVBox/TopHBox/VBoxContainer/AngleUpButton" to="." method="_on_angle_up_button_down"]
+[connection signal="button_up" from="WrapperVBox/TopHBox/VBoxContainer/AngleUpButton" to="." method="_on_angle_up_button_up"]
+[connection signal="button_down" from="WrapperVBox/TopHBox/VBoxContainer/AngleDownButton" to="." method="_on_angle_down_button_down"]
+[connection signal="button_up" from="WrapperVBox/TopHBox/VBoxContainer/AngleDownButton" to="." method="_on_angle_down_button_up"]
+[connection signal="button_down" from="WrapperVBox/TopHBox/VBoxContainer2/PowerUpButton" to="." method="_on_power_up_button_down"]
+[connection signal="button_up" from="WrapperVBox/TopHBox/VBoxContainer2/PowerUpButton" to="." method="_on_power_up_button_up"]
+[connection signal="button_down" from="WrapperVBox/TopHBox/VBoxContainer2/PowerDownButton" to="." method="_on_power_down_button_down"]
+[connection signal="button_up" from="WrapperVBox/TopHBox/VBoxContainer2/PowerDownButton" to="." method="_on_power_down_button_up"]
+[connection signal="pressed" from="WrapperVBox/BottomHBox/MoveLeftButton" to="." method="_on_move_left_pressed"]
+[connection signal="pressed" from="WrapperVBox/BottomHBox/ShootButton" to="." method="_on_shoot_pressed"]
+[connection signal="pressed" from="WrapperVBox/BottomHBox/MoveRightButton" to="." method="_on_move_right_pressed"]

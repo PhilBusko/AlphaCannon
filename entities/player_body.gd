@@ -1,3 +1,6 @@
+'''
+PLAYER BODY
+'''
 extends CharacterBody2D
 
 const bullet_ref = preload('res://entities/bullet_body.tscn')
@@ -7,7 +10,6 @@ var bullets_shot = 0
 
 @onready var random = RandomNumberGenerator.new()
 @onready var level_scene = get_tree().current_scene
-var ui_link = null
 
 const SPEED = 300.0
 
@@ -17,9 +19,12 @@ func _physics_process(delta):
 
 	player_movement(delta)
 	
+	# this has to be handled by input.is_action_pressed 
+	# because shortcut doesn't handle holding the button down
 	player_aiming()
 	
-	shoot_bullet()
+	#if Input.is_action_just_pressed('shoot'):
+		#shoot_bullet()
 
 func player_movement(delta):
 	
@@ -36,9 +41,7 @@ func player_movement(delta):
 
 	# stop player from moving outside world boundaries
 	# doesn't work against gravity
-	var screen_size = get_viewport_rect().size
-	var half_player_width = 25
-	global_position.x = clamp(global_position.x, half_player_width, screen_size.x - half_player_width)
+	global_position.x = clamp(global_position.x, 30, Utility.world_width - 30)
 
 	# move after data updates
 	move_and_slide()
@@ -47,132 +50,142 @@ func player_aiming():
 
 	# change cannon angle
 	var radians = 0.02
-	if Input.is_action_pressed('angle_left'):
+	if Input.is_action_pressed('ui_left'):
 		$PlayerBarrel.rotate(-radians)
-	if Input.is_action_pressed('angle_right'):
+	if Input.is_action_pressed('ui_right'):
 		$PlayerBarrel.rotate(radians)
 
 	# change cannon power
-	if Input.is_action_pressed('power_up'):
+	if Input.is_action_pressed('ui_up'):
 		GlobalStats.player.power_curr += 10
 		if GlobalStats.player.power_curr > GlobalStats.player.power_max: 
 			GlobalStats.player.power_curr = GlobalStats.player.power_max
-	if Input.is_action_pressed('power_down'):
+	if Input.is_action_pressed('ui_down'):
 		GlobalStats.player.power_curr -= 10
 		if GlobalStats.player.power_curr < GlobalStats.player.power_min: 
 			GlobalStats.player.power_curr = GlobalStats.player.power_min
 
-func shoot_bullet():
 
-	if Input.is_action_just_pressed('shoot'):
-		bullets_shot += 1
-		var new_bullet = bullet_ref.instantiate()
-		new_bullet.name = 'BulletPlayer' + str(bullets_shot).pad_zeros(3)
-		new_bullet.get_child(0).texture = bullet_texture
-		new_bullet.get_child(0).scale = Vector2(0.3, 0.3)
-		new_bullet.get_child(0).modulate = Color8(100, 0, 0)
-		new_bullet.global_rotation = $PlayerBarrel.rotation
-		level_scene.add_child(new_bullet)
-		new_bullet.global_position = $PlayerBarrel/Marker2D.global_position
-		
-		var barrel_dir = Vector2.RIGHT.rotated($PlayerBarrel.rotation)
-		var perc_range = 0.0 #GlobalStats.player.power_range
-		var random_power = random.randi_range(
-			GlobalStats.player.power_curr *(1-perc_range), 
-			GlobalStats.player.power_curr *(1+perc_range)
-		)
-		new_bullet.apply_central_impulse(barrel_dir * random_power)
-		
-		new_bullet.shooter_data = {
-			'actor': 'player',
-			'bomb_radius': GlobalStats.player.bomb_radius,
-			'bomb_damage': GlobalStats.player.bomb_damage,
-		}
-		new_bullet.collided.connect(level_scene._on_bullet_collided)
+func _process(_delta):
 
-func _process(delta):
+	draw_aim_line()
 
-	# draw straight barrel line
-	# must map to the local position of the line
+func draw_aim_line():
 
-	var line_length = 500
-	var start_point = $PlayerBarrel/Marker2D.global_position #+ Vector2.RIGHT * 100
-	var end_point = start_point + Vector2.RIGHT.rotated($PlayerBarrel.global_rotation) * line_length
-	$StraightAim.clear_points()
-	$StraightAim.add_point(to_local(start_point))
-	$StraightAim.add_point(to_local(end_point))
+	# get aim line based on max player length
 
-	# draw gravity based trajectory
-
-	var num_points = 50
 	var current_pos: Vector2 = $PlayerBarrel/Marker2D.global_position
-	var current_vel: Vector2 = Vector2.RIGHT.rotated($PlayerBarrel.global_rotation) * GlobalStats.player.power_curr
-	var predict_points = predict_path(current_pos, current_vel, num_points, delta)
+	var current_vel: Vector2 = (Vector2.RIGHT.rotated($PlayerBarrel.global_rotation) * 
+		GlobalStats.player.power_curr)
+	var predict_points = Utility.get_path_max_length(current_pos, current_vel, 
+		GlobalStats.player.aim_max_length)
+
+	# add the power indicator arrows
+
+	if predict_points.size() >= 10:
+		
+		var ratio = (float(GlobalStats.player.power_curr - GlobalStats.player.power_min) /
+			float(GlobalStats.player.power_max - GlobalStats.player.power_min))
+		var draw_idx = int(predict_points.size() * ratio)
+		if draw_idx == 0:
+			draw_idx = 1
+		if draw_idx == predict_points.size():
+			draw_idx = predict_points.size() -1
+		
+		var point_a = predict_points[draw_idx]
+		var point_b = predict_points[draw_idx -1]
+		
+		var direction_vector: Vector2 = point_b - point_a
+		var left_arrow: Vector2 = direction_vector.rotated(deg_to_rad(45)).normalized()
+		var right_arrow: Vector2 = direction_vector.rotated(deg_to_rad(135)).normalized()
+		
+		var min_arrow = 10
+		var max_arrow = 30
+		var arrow_len = (max_arrow - min_arrow) * ratio + min_arrow
+		
+		var new_point1 = point_a + left_arrow * arrow_len
+		var new_point2 = point_a - right_arrow * arrow_len
+		
+		predict_points.insert(draw_idx, new_point1)
+		predict_points.insert(draw_idx, point_a)
+		predict_points.insert(draw_idx, new_point2)
+		predict_points.insert(draw_idx, point_a)
+
+	# display the aim line
 
 	$GravityAim.clear_points()
 	for pnt in predict_points:
 		$GravityAim.add_point(to_local(pnt))
 
-	#current_pos = $PlayerBarrel/Marker2D.global_position
-	#current_vel = Vector2.RIGHT.rotated($PlayerBarrel.global_rotation) * cannon_power * 0.9
-	#predict_points = predict_path(current_pos, current_vel, num_points, delta)
-#
-	#$GravityAim2.clear_points()
-	#for pnt in predict_points:
-		#$GravityAim2.add_point(to_local(pnt))
-#
-	#current_pos = $PlayerBarrel/Marker2D.global_position
-	#current_vel = Vector2.RIGHT.rotated($PlayerBarrel.global_rotation) * cannon_power * 1.1
-	#predict_points = predict_path(current_pos, current_vel, num_points, delta)
-#
-	#$GravityAim3.clear_points()
-	#for pnt in predict_points:
-		#$GravityAim3.add_point(to_local(pnt))
+	# draw straight barrel line
+	#var line_length = 500
+	#var start_point = $PlayerBarrel/Marker2D.global_position
+	#var end_point = start_point + Vector2.RIGHT.rotated($PlayerBarrel.global_rotation) * line_length
+	#$StraightAim.clear_points()
+	#$StraightAim.add_point(to_local(start_point))
+	#$StraightAim.add_point(to_local(end_point))
 
-func predict_path(start_pos, start_vel, steps, time_step):
-	var path_points = []
-	var current_pos = start_pos
-	var current_vel = start_vel
-	var linear_damp = 0.001
-	#var space_state = get_world_2d().direct_space_state # Or PhysicsServer2D.get_space_state()
-
-	for i in range(steps):
-		
-		# find the next point
-		current_vel += get_gravity() * time_step
-		current_vel *= (1.0 - linear_damp)
-		current_pos += current_vel * time_step
-
-		# check for collision
-		var is_collide = false
-		# var query = PhysicsShapeQueryParameters2D.new()
-		# query.set_shape(...) // Define shape to cast
-		#// query.transform = Transform2D(0, current_pos)
-		#// var result = space_state.intersect_shape(query)
-		#// if result.size() > 0:
-		#//     // Hit something! Add hit point and break or get reflection
-		#//     path_points.append(result[0].position)
-		#//     break
-		
-		if not is_collide:
-			path_points.append(current_pos)
-		else:
-			break
-
-	return path_points
 
 ################################################################################
 
-func _on_damaged(_damage, collision_point):
-
+func _on_damaged(_damage, _collision_point):
 	pass
-	#ui_link.show_damage(damage)
+	# player-ui also gets this emission
+	# where to store player current health?
+	# implement knocback here
+
+
+################################################################################
+
+func _on_ui_pressed(ui_type):
+	prints('player_body _on_ui_pressed', ui_type)
 	
-	# display damage animation
-	#var new_label = label_ref.instantiate()
-	#level_scene.add_child(new_label)
-	#new_label.global_position = Vector2(
-		#self.global_position.x,
-		#$PlayerBarrel/Marker2D.global_position.y - 20
-	#)
-	#new_label.show_damage(damage)
+	if ui_type == 'shoot':
+		shoot_bullet()
+
+	if ui_type == 'move_right':
+		pass
+	if ui_type == 'move_left':
+		pass
+
+	var radians = 0.02
+	if ui_type == 'angle_up':
+		$PlayerBarrel.rotate(-radians)
+	if ui_type == 'angle_down':
+		$PlayerBarrel.rotate(radians)
+
+	if ui_type == 'power_up':
+		GlobalStats.player.power_curr += 10
+		if GlobalStats.player.power_curr > GlobalStats.player.power_max: 
+			GlobalStats.player.power_curr = GlobalStats.player.power_max
+	if ui_type == 'power_down':
+		GlobalStats.player.power_curr -= 10
+		if GlobalStats.player.power_curr < GlobalStats.player.power_min: 
+			GlobalStats.player.power_curr = GlobalStats.player.power_min
+
+func shoot_bullet():
+ 
+	bullets_shot += 1
+	var new_bullet = bullet_ref.instantiate()
+	new_bullet.name = 'BulletPlayer' + str(bullets_shot).pad_zeros(3)
+	new_bullet.get_child(0).texture = bullet_texture
+	new_bullet.get_child(0).scale = Vector2(0.3, 0.3)
+	new_bullet.get_child(0).modulate = Color8(100, 0, 0)
+	new_bullet.global_rotation = $PlayerBarrel.rotation
+	level_scene.add_child(new_bullet)
+	new_bullet.global_position = $PlayerBarrel/Marker2D.global_position
+	
+	var barrel_dir = Vector2.RIGHT.rotated($PlayerBarrel.rotation)
+	var perc_range = 0.0 #GlobalStats.player.power_range
+	var random_power = random.randi_range(
+		GlobalStats.player.power_curr *(1-perc_range), 
+		GlobalStats.player.power_curr *(1+perc_range)
+	)
+	new_bullet.apply_central_impulse(barrel_dir * random_power)
+	
+	new_bullet.shooter_data = {
+		'actor': 'player',
+		'bomb_radius': GlobalStats.player.bomb_radius,
+		'bomb_damage': GlobalStats.player.bomb_damage,
+	}
+	new_bullet.collided.connect(level_scene._on_bullet_collided)

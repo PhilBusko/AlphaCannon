@@ -1,0 +1,16 @@
+[remap]
+
+importer="bitmap"
+type="BitMap"
+uid="uid://dj062xjbjqak3"
+path="res://.godot/imported/move-mask.png-5e6079212bb839c9863a101cae16583c.res"
+
+[deps]
+
+source_file="res://entities_ui/sprites/move-mask.png"
+dest_files=["res://.godot/imported/move-mask.png-5e6079212bb839c9863a101cae16583c.res"]
+
+[params]
+
+create_from=0
+threshold=0.5

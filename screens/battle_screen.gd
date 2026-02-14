@@ -1,8 +1,7 @@
+'''
+BATTLE SCREEN
+'''
 extends Node2D
-
-@onready var random = RandomNumberGenerator.new()
-@onready var world_width = get_viewport_rect().size[0]
-@onready var world_height = get_viewport_rect().size[1]
 
 ################################################################################
 
@@ -19,9 +18,9 @@ func _ready() -> void:
 	var new_player_body = player_body.instantiate()
 	add_child(new_player_body)
 	new_player_body.global_position = Vector2(
-		random.randi_range(100, world_width *1/4),
+		Utility.RNG.randi_range(100, Utility.world_width *1/4),
 		#(100 + world_width *1/4)/2,
-		300,
+		200,
 	)
 	new_player_body.get_node('PlayerBarrel').rotation_degrees = -45
 
@@ -29,15 +28,18 @@ func _ready() -> void:
 	var new_player_ui = player_ui.instantiate()
 	add_child(new_player_ui)
 	new_player_body.get_node('UIRemote').remote_path = new_player_ui.get_path()
+	new_player_ui.ui_pressed.connect(new_player_body._on_ui_pressed)
+
+
 
 	# spawn enemy
 	var new_enemy_body = enemy_body.instantiate()
 	new_enemy_body.actor_data = GlobalStats.enemy_level1
 	add_child(new_enemy_body)
 	new_enemy_body.global_position = Vector2(
-		random.randi_range(world_width *3/4, world_width -100), 
+		Utility.RNG.randi_range(Utility.world_width *3/4, Utility.world_width -100), 
 		#(world_width *3/4 + world_width -100)/2, 
-		300,
+		200,
 	)
 
 	# initialize enemy AI
@@ -50,7 +52,6 @@ func _ready() -> void:
 	self.player_damaged.connect(new_player_body._on_damaged)
 	self.player_damaged.connect(new_player_ui._on_damaged)
 	self.enemy_damaged.connect(new_enemy_body._on_damaged)
-
 
 ################################################################################
 

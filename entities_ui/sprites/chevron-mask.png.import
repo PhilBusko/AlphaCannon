@@ -1,0 +1,16 @@
+[remap]
+
+importer="bitmap"
+type="BitMap"
+uid="uid://wbfn5qjljv1"
+path="res://.godot/imported/chevron-mask.png-72ddbb3a489f581822fb848c56fb1b1a.res"
+
+[deps]
+
+source_file="res://entities_ui/sprites/chevron-mask.png"
+dest_files=["res://.godot/imported/chevron-mask.png-72ddbb3a489f581822fb848c56fb1b1a.res"]
+
+[params]
+
+create_from=0
+threshold=0.5

@@ -1,33 +1,36 @@
+'''
+ENEMY BODY
+'''
 extends CharacterBody2D
 
 const bullet_ref = preload('res://entities/bullet_body.tscn')
 const label_ref = preload('res://entities_ui/damage_label.tscn')
 var actor_data = {}
 
-@onready var random = RandomNumberGenerator.new()
 @onready var level_scene = get_tree().current_scene
 
 func _ready():
 	$BarrelArea.rotation_degrees = actor_data.angle_curr
 	$ReloadTimer.wait_time = actor_data.reload_time
-	$ReloadTimer.start()
+	#$ReloadTimer.start()
 
-
-#################################################################################
+################################################################################
 
 func _physics_process(delta: float) -> void:
 
 	enemy_movement(delta)
-	
+
 
 func enemy_movement(delta):
 	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
+	global_position.x = clamp(global_position.x, 30, Utility.world_width - 30)
+
 	move_and_slide()
 
-
+################################################################################
 
 func _on_reload_timeout() -> void:
 	
@@ -41,7 +44,7 @@ func _on_reload_timeout() -> void:
 
 	var results = await get_hit_path()
 	var power_range = 10
-	var random_power = random.randi_range(
+	var random_power = Utility.RNG.randi_range(
 		results.power_hit - power_range, 
 		results.power_hit + power_range, 
 	)
@@ -68,7 +71,6 @@ func _on_reload_timeout() -> void:
 	# reload next bullet
 	$ReloadTimer.start()
 
-
 func get_hit_path():
 	
 	var power_hit = actor_data.power_curr
@@ -80,7 +82,7 @@ func get_hit_path():
 		$BarrelArea/AimMarker.global_rotation_degrees = angle_hit
 		var start_pos = $BarrelArea/AimMarker.global_position
 		var start_vel = Vector2.LEFT.rotated($BarrelArea/AimMarker.global_rotation) * power_hit
-		
+
 		points = Utility.get_path_collision(start_pos, start_vel, 200)
 		var last_point = points[-1]
 
@@ -119,8 +121,8 @@ func get_hit_path():
 					angle_hit -= 2
 
 				if power_hit > 1600: power_hit = 1500
-				if angle_hit > 80: angle_hit = 70
-				if angle_hit < 40: angle_hit = 50
+				if angle_hit > 75: angle_hit = 60
+				if angle_hit < 40: angle_hit = 60
 
 			else:
 				print('rightward targeting not implemented')
@@ -129,7 +131,6 @@ func get_hit_path():
 		'power_hit': power_hit,
 		'angle_hit': angle_hit,
 	}
-
 
 func create_and_shoot():
 	
@@ -158,11 +159,9 @@ func create_and_shoot():
 	new_bullet.collided.connect(level_scene._on_bullet_collided)
 	actor_data.shots_taken += 1
 
-
-
 ################################################################################
 
-func _on_damaged(damage, collision_point):
+func _on_damaged(damage, _collision_point):
 	
 	# TODO take damage onto enemy
 	

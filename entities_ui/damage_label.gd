@@ -1,8 +1,10 @@
+'''
+DAMAGE LABEL
+'''
 extends Control
 
-
 func show_damage(value, collision_point):
-	
+
 	self.text = str(value)
 	var start_pos = Vector2(collision_point.x -15, collision_point.y -50)
 	print(start_pos)
@@ -17,7 +19,7 @@ func show_damage(value, collision_point):
 	tween.tween_property(self, 'position', position + TRAVEL_DISTANCE, DURATION)
 		#.set_trans(Tween.TRANS_QUAD)\
 		#.set_ease(Tween.EASE_OUT)
-	
+
 	# animate the fade-out with modulate alpha channel
 	# parallel makes next tween call simultaneous
 	tween.parallel()

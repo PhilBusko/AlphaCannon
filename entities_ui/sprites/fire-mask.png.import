@@ -1,0 +1,16 @@
+[remap]
+
+importer="bitmap"
+type="BitMap"
+uid="uid://cb62dxc02vwcf"
+path="res://.godot/imported/fire-mask.png-0d9d119fd43cfb588694c8c0bd49026c.res"
+
+[deps]
+
+source_file="res://entities_ui/sprites/fire-mask.png"
+dest_files=["res://.godot/imported/fire-mask.png-0d9d119fd43cfb588694c8c0bd49026c.res"]
+
+[params]
+
+create_from=0
+threshold=0.5
