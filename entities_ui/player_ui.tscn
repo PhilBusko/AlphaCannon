@@ -294,6 +294,7 @@ value = 50.0
 show_percentage = false
 
 [node name="ActionTimer" type="Timer" parent="WrapperVBox/ReloadHBox"]
+one_shot = true
 
 [connection signal="button_down" from="WrapperVBox/TopHBox/VBoxContainer/AngleUpButton" to="." method="_on_angle_up_button_down"]
 [connection signal="button_up" from="WrapperVBox/TopHBox/VBoxContainer/AngleUpButton" to="." method="_on_angle_up_button_up"]
@@ -306,3 +307,4 @@ show_percentage = false
 [connection signal="pressed" from="WrapperVBox/BottomHBox/MoveLeftButton" to="." method="_on_move_left_pressed"]
 [connection signal="pressed" from="WrapperVBox/BottomHBox/ShootButton" to="." method="_on_shoot_pressed"]
 [connection signal="pressed" from="WrapperVBox/BottomHBox/MoveRightButton" to="." method="_on_move_right_pressed"]
+[connection signal="timeout" from="WrapperVBox/ReloadHBox/ActionTimer" to="." method="_on_action_timer_timeout"]

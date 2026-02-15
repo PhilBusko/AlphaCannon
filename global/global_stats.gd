@@ -9,9 +9,9 @@ var player = {
 	'bomb_damage': 20,
 	'bomb_radius': 30,
 	'aim_max_length': 200,  # 200, 400, 600
-	'move_limit': 0,
+	'move_limit': 100,
 
-	'reload_time': 3.0,
+	'reload_time': 2.0,
 	'health': 100,
 	'wounds': 0,
 

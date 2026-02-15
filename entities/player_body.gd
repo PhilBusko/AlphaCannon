@@ -8,12 +8,14 @@ const label_ref = preload('res://entities_ui/damage_label.tscn')
 const bullet_texture = preload('res://entities/sprites/bullet-white.png')
 var bullets_shot = 0
 
-@onready var random = RandomNumberGenerator.new()
 @onready var level_scene = get_tree().current_scene
 
-const SPEED = 300.0
 
 ################################################################################
+
+const SPEED = 130
+var is_moving = false 	# communicate from signal handler to physics-process
+var move_start_pos: Vector2 = Vector2.ZERO
 
 func _physics_process(delta):
 
@@ -23,8 +25,14 @@ func _physics_process(delta):
 	# because shortcut doesn't handle holding the button down
 	player_aiming()
 	
+	# the shortcut is handling this now
 	#if Input.is_action_just_pressed('shoot'):
 		#shoot_bullet()
+
+func stop_move():
+	velocity.x = move_toward(velocity.x, 0, SPEED)
+	is_moving = false
+	move_start_pos = Vector2.ZERO
 
 func player_movement(delta):
 	
@@ -32,19 +40,31 @@ func player_movement(delta):
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
-	# player movement input
-	var direction := Input.get_axis('move_left', 'move_right')
-	if direction:
-		velocity.x = direction * SPEED
-	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
+	# user movement
+	if is_moving:
+
+		if global_position.distance_to(move_start_pos) > GlobalStats.player.move_limit:
+			#print('stop move')
+			stop_move()
+
+		elif velocity.is_zero_approx():
+			#print('stuck')
+			stop_move()
+
+		elif ((global_position.x <= 30 and velocity.x < 0) or 
+			(global_position.x >= Utility.world_width - 30 and velocity.x > 0)):
+			#print('clamped')
+			stop_move()
+
+		#else:
+			#print('regular move')
+
+	# move after data updates
+	move_and_slide()
 
 	# stop player from moving outside world boundaries
 	# doesn't work against gravity
 	global_position.x = clamp(global_position.x, 30, Utility.world_width - 30)
-
-	# move after data updates
-	move_and_slide()
 
 func player_aiming():
 
@@ -65,6 +85,76 @@ func player_aiming():
 		if GlobalStats.player.power_curr < GlobalStats.player.power_min: 
 			GlobalStats.player.power_curr = GlobalStats.player.power_min
 
+################################################################################
+
+func _on_ui_pressed(ui_type):
+	prints('player_body _on_ui_pressed', ui_type)
+	
+	# these are "press buttons" so their code is united here
+	
+	if ui_type == 'shoot':
+		shoot_bullet()
+	if ui_type == 'move_right':
+		move_player('right')
+	if ui_type == 'move_left':
+		move_player('left')
+
+	# these are "down/up buttons" so they need to be implemented for each input
+
+	var radians = 0.02
+	if ui_type == 'angle_up':
+		$PlayerBarrel.rotate(-radians)
+	if ui_type == 'angle_down':
+		$PlayerBarrel.rotate(radians)
+
+	if ui_type == 'power_up':
+		GlobalStats.player.power_curr += 10
+		if GlobalStats.player.power_curr > GlobalStats.player.power_max: 
+			GlobalStats.player.power_curr = GlobalStats.player.power_max
+	if ui_type == 'power_down':
+		GlobalStats.player.power_curr -= 10
+		if GlobalStats.player.power_curr < GlobalStats.player.power_min: 
+			GlobalStats.player.power_curr = GlobalStats.player.power_min
+
+func shoot_bullet():
+ 
+	bullets_shot += 1
+	var new_bullet = bullet_ref.instantiate()
+	new_bullet.name = 'BulletPlayer' + str(bullets_shot).pad_zeros(3)
+	new_bullet.get_child(0).texture = bullet_texture
+	new_bullet.get_child(0).scale = Vector2(0.3, 0.3)
+	new_bullet.get_child(0).modulate = Color8(100, 0, 0)
+	new_bullet.global_rotation = $PlayerBarrel.rotation
+	level_scene.add_child(new_bullet)
+	new_bullet.global_position = $PlayerBarrel/Marker2D.global_position
+	
+	var barrel_dir = Vector2.RIGHT.rotated($PlayerBarrel.rotation)
+	var perc_range = 0.0 #GlobalStats.player.power_range
+	var random_power = Utility.RNG.randi_range(
+		GlobalStats.player.power_curr *(1-perc_range), 
+		GlobalStats.player.power_curr *(1+perc_range)
+	)
+	new_bullet.apply_central_impulse(barrel_dir * random_power)
+	
+	new_bullet.shooter_data = {
+		'actor': 'player',
+		'bomb_radius': GlobalStats.player.bomb_radius,
+		'bomb_damage': GlobalStats.player.bomb_damage,
+	}
+	new_bullet.collided.connect(level_scene._on_bullet_collided)
+
+func move_player(side):
+	
+	var direction: Vector2 = Vector2.ZERO
+	if side == 'right': direction = Vector2.RIGHT
+	if side == 'left': direction = Vector2.LEFT
+
+	if direction != Vector2.ZERO:
+		is_moving = true
+		move_start_pos = global_position
+		velocity.x = direction.x * SPEED
+
+################################################################################
 
 func _process(_delta):
 
@@ -125,7 +215,6 @@ func draw_aim_line():
 	#$StraightAim.add_point(to_local(start_point))
 	#$StraightAim.add_point(to_local(end_point))
 
-
 ################################################################################
 
 func _on_damaged(_damage, _collision_point):
@@ -133,59 +222,3 @@ func _on_damaged(_damage, _collision_point):
 	# player-ui also gets this emission
 	# where to store player current health?
 	# implement knocback here
-
-
-################################################################################
-
-func _on_ui_pressed(ui_type):
-	prints('player_body _on_ui_pressed', ui_type)
-	
-	if ui_type == 'shoot':
-		shoot_bullet()
-
-	if ui_type == 'move_right':
-		pass
-	if ui_type == 'move_left':
-		pass
-
-	var radians = 0.02
-	if ui_type == 'angle_up':
-		$PlayerBarrel.rotate(-radians)
-	if ui_type == 'angle_down':
-		$PlayerBarrel.rotate(radians)
-
-	if ui_type == 'power_up':
-		GlobalStats.player.power_curr += 10
-		if GlobalStats.player.power_curr > GlobalStats.player.power_max: 
-			GlobalStats.player.power_curr = GlobalStats.player.power_max
-	if ui_type == 'power_down':
-		GlobalStats.player.power_curr -= 10
-		if GlobalStats.player.power_curr < GlobalStats.player.power_min: 
-			GlobalStats.player.power_curr = GlobalStats.player.power_min
-
-func shoot_bullet():
- 
-	bullets_shot += 1
-	var new_bullet = bullet_ref.instantiate()
-	new_bullet.name = 'BulletPlayer' + str(bullets_shot).pad_zeros(3)
-	new_bullet.get_child(0).texture = bullet_texture
-	new_bullet.get_child(0).scale = Vector2(0.3, 0.3)
-	new_bullet.get_child(0).modulate = Color8(100, 0, 0)
-	new_bullet.global_rotation = $PlayerBarrel.rotation
-	level_scene.add_child(new_bullet)
-	new_bullet.global_position = $PlayerBarrel/Marker2D.global_position
-	
-	var barrel_dir = Vector2.RIGHT.rotated($PlayerBarrel.rotation)
-	var perc_range = 0.0 #GlobalStats.player.power_range
-	var random_power = random.randi_range(
-		GlobalStats.player.power_curr *(1-perc_range), 
-		GlobalStats.player.power_curr *(1+perc_range)
-	)
-	new_bullet.apply_central_impulse(barrel_dir * random_power)
-	
-	new_bullet.shooter_data = {
-		'actor': 'player',
-		'bomb_radius': GlobalStats.player.bomb_radius,
-		'bomb_damage': GlobalStats.player.bomb_damage,
-	}
-	new_bullet.collided.connect(level_scene._on_bullet_collided)
