@@ -296,6 +296,10 @@ show_percentage = false
 [node name="ActionTimer" type="Timer" parent="WrapperVBox/ReloadHBox"]
 one_shot = true
 
+[node name="KnockbackTimer" type="Timer" parent="WrapperVBox/ReloadHBox"]
+wait_time = 2.0
+one_shot = true
+
 [connection signal="button_down" from="WrapperVBox/TopHBox/VBoxContainer/AngleUpButton" to="." method="_on_angle_up_button_down"]
 [connection signal="button_up" from="WrapperVBox/TopHBox/VBoxContainer/AngleUpButton" to="." method="_on_angle_up_button_up"]
 [connection signal="button_down" from="WrapperVBox/TopHBox/VBoxContainer/AngleDownButton" to="." method="_on_angle_down_button_down"]
@@ -308,3 +312,4 @@ one_shot = true
 [connection signal="pressed" from="WrapperVBox/BottomHBox/ShootButton" to="." method="_on_shoot_pressed"]
 [connection signal="pressed" from="WrapperVBox/BottomHBox/MoveRightButton" to="." method="_on_move_right_pressed"]
 [connection signal="timeout" from="WrapperVBox/ReloadHBox/ActionTimer" to="." method="_on_action_timer_timeout"]
+[connection signal="timeout" from="WrapperVBox/ReloadHBox/KnockbackTimer" to="." method="_on_knockback_timer_timeout"]

@@ -1,9 +1,9 @@
 extends Node
 
 var player = {
-	'power_min': 800,
+	'power_min': 700,
 	'power_max': 1300,
-	'power_curr': 900,
+	'power_curr': 1000,
 	'power_range': 0.2,
 
 	'bomb_damage': 20,
@@ -37,7 +37,7 @@ var enemy_level1 = {
 	'power_range': 0.1,
 	'bomb_damage': 20,
 	'bomb_radius': 30,
-	'reload_time': 9.0,
+	'reload_time': 5.0,
 
 	'enemy_id': null,
 	'health': 100,

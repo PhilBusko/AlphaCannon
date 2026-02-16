@@ -8,6 +8,7 @@ extends Node2D
 @onready var damage_label : Label = $WrapperVBox/HighHBox/DamageLabel
 @onready var action_pbar : ProgressBar = $WrapperVBox/ReloadHBox/ActionProgressBar
 @onready var action_timer : Timer = $WrapperVBox/ReloadHBox/ActionTimer
+@onready var knockback_timer : Timer = $WrapperVBox/ReloadHBox/KnockbackTimer
 
 ################################################################################
 
@@ -50,6 +51,7 @@ func _process(_delta):
 ################################################################################
 
 signal ui_pressed
+signal player_enabled
 
 @onready var shoot_button : TextureButton = $WrapperVBox/BottomHBox/ShootButton
 @onready var right_button : TextureButton = $WrapperVBox/BottomHBox/MoveRightButton
@@ -67,17 +69,19 @@ func _on_move_left_pressed() -> void:
 	ui_pressed.emit('move_left')
 	start_action()
 
-func _on_action_timer_timeout() -> void:
-	shoot_button.disabled = false
-	right_button.disabled = false
-	left_button.disabled = false
-
 func start_action():
 	shoot_button.disabled = true
 	right_button.disabled = true
 	left_button.disabled = true
 	action_timer.start()
+	player_enabled.emit(false)
 
+func _on_action_timer_timeout() -> void:
+	if knockback_timer.is_stopped():
+		shoot_button.disabled = false
+		right_button.disabled = false
+		left_button.disabled = false
+		player_enabled.emit(true)
 
 ################################################################################
 
@@ -105,6 +109,22 @@ func _on_power_down_button_up() -> void:
 
 func _on_damaged(damage, collision_point):
 	#current_health -= damage
+
+	# show damage amount
 	damage_label.show_damage(damage, collision_point)
+
+	# knockback disables actions
+	shoot_button.disabled = true
+	right_button.disabled = true
+	left_button.disabled = true
+	knockback_timer.start()
+	player_enabled.emit(false)
+
+func _on_knockback_timer_timeout() -> void:
+	if action_timer.is_stopped():
+		shoot_button.disabled = false
+		right_button.disabled = false
+		left_button.disabled = false
+		player_enabled.emit(true)
 
 ################################################################################

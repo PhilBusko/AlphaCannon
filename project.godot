@@ -22,8 +22,8 @@ Utility="*res://global/utility.gd"
 
 [display]
 
-window/size/viewport_width=1600
-window/size/viewport_height=500
+window/size/viewport_width=1500
+window/size/viewport_height=700
 window/stretch/mode="viewport"
 
 [input]

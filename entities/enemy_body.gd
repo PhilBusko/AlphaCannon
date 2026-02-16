@@ -12,21 +12,46 @@ var actor_data = {}
 func _ready():
 	$BarrelArea.rotation_degrees = actor_data.angle_curr
 	$ReloadTimer.wait_time = actor_data.reload_time
-	#$ReloadTimer.start()
+	$ReloadTimer.start()
 
 ################################################################################
+
+var is_knockback = false 	# communicate from signal handler to physics-process
+var knockback_start_pos: Vector2 = Vector2.ZERO
+var knockback_dist = 0
+const KNOCKBACK_SPEED = 300
 
 func _physics_process(delta: float) -> void:
 
 	enemy_movement(delta)
 
+func stop_knockback():
+	velocity.x = move_toward(velocity.x, 0, KNOCKBACK_SPEED)
+	is_knockback = false
+	knockback_start_pos = Vector2.ZERO
 
 func enemy_movement(delta):
 	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
-	global_position.x = clamp(global_position.x, 30, Utility.world_width - 30)
+	if is_knockback:
+		
+		if global_position.distance_to(knockback_start_pos) >= knockback_dist:
+			#print('stop knockback')
+			stop_knockback()
+			
+		elif velocity.is_zero_approx():
+			#print('stuck')
+			stop_knockback()
+
+		elif ((global_position.x <= 30 and velocity.x < 0) or 
+			(global_position.x >= Utility.world_width - 30 and velocity.x > 0)):
+			#print('clamped')
+			stop_knockback()
+
+		#else:
+			#print('regular knockback')
 
 	move_and_slide()
 
@@ -43,7 +68,7 @@ func _on_reload_timeout() -> void:
 	$AimLinePos.clear_points()
 
 	var results = await get_hit_path()
-	var power_range = 10
+	var power_range = 0
 	var random_power = Utility.RNG.randi_range(
 		results.power_hit - power_range, 
 		results.power_hit + power_range, 
@@ -55,14 +80,14 @@ func _on_reload_timeout() -> void:
 	var start_pos = $BarrelArea/AimMarker.global_position
 	var start_vel = (Vector2.LEFT.rotated($BarrelArea/AimMarker.global_rotation) * 
 		(results.power_hit - power_range))
-	var points = Utility.get_path_collision(start_pos, start_vel, 200)
+	var points = Utility.get_path_collision(start_pos, start_vel)
 	for pnt in points: $AimLineNeg.add_point(to_local(pnt))
 
 	$BarrelArea/AimMarker.global_rotation_degrees = results.angle_hit
 	start_pos = $BarrelArea/AimMarker.global_position
 	start_vel = (Vector2.LEFT.rotated($BarrelArea/AimMarker.global_rotation) * 
 		(results.power_hit + power_range))
-	points = Utility.get_path_collision(start_pos, start_vel, 200)
+	points = Utility.get_path_collision(start_pos, start_vel)
 	for pnt in points: $AimLinePos.add_point(to_local(pnt))
 
 	# shoot on chosen path
@@ -72,18 +97,18 @@ func _on_reload_timeout() -> void:
 	$ReloadTimer.start()
 
 func get_hit_path():
-	
+
 	var power_hit = actor_data.power_curr
 	var angle_hit = actor_data.angle_curr
 	var points = []
-	
+
 	for trial in 12:
 		
 		$BarrelArea/AimMarker.global_rotation_degrees = angle_hit
 		var start_pos = $BarrelArea/AimMarker.global_position
 		var start_vel = Vector2.LEFT.rotated($BarrelArea/AimMarker.global_rotation) * power_hit
 
-		points = Utility.get_path_collision(start_pos, start_vel, 200)
+		points = Utility.get_path_collision(start_pos, start_vel)
 		var last_point = points[-1]
 
 		$AimLine.clear_points()
@@ -161,16 +186,36 @@ func create_and_shoot():
 
 ################################################################################
 
-func _on_damaged(damage, _collision_point):
+func _on_damaged(_damage, collision_point):
+	#prints('enemy damaged', damage, collision_point)
 	
-	# TODO take damage onto enemy
-	
+	# knockback
+
+	var direction = Vector2.ZERO
+	if global_position.x < 100: 
+		direction = Vector2.RIGHT
+	elif global_position.x > Utility.world_width -100: 
+		direction = Vector2.LEFT
+	else: 
+		if collision_point.x < global_position.x:
+			direction = Vector2.RIGHT
+		else:
+			direction = Vector2.LEFT
+	direction.y = -1
+
+	is_knockback = true
+	knockback_start_pos = global_position
+	velocity = direction * KNOCKBACK_SPEED
+	knockback_dist = Utility.RNG.randi_range(80, 140)
+
+
+	# take damage onto enemy
 	
 	# display damage animation
-	var new_label = label_ref.instantiate()
-	level_scene.add_child(new_label)
-	new_label.global_position = Vector2(
-		self.global_position.x,
-		self.global_position.y - 40,
-	)
-	new_label.show_damage(damage)
+	#var new_label = label_ref.instantiate()
+	#level_scene.add_child(new_label)
+	#new_label.global_position = Vector2(
+		#self.global_position.x,
+		#self.global_position.y - 40,
+	#)
+	#new_label.show_damage(damage)

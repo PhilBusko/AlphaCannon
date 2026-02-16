@@ -6,9 +6,7 @@ extends Control
 func show_damage(value, collision_point):
 
 	self.text = str(value)
-	var start_pos = Vector2(collision_point.x -15, collision_point.y -50)
-	print(start_pos)
-	self.global_position = start_pos
+	self.global_position = Vector2(collision_point.x -15, collision_point.y -50)
 	self.modulate = Color(modulate.r, modulate.g, modulate.b, 1.0)
 
 	const DURATION = 2.8

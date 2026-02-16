@@ -9,17 +9,21 @@ extends Node2D
 @onready var RNG = RandomNumberGenerator.new()
 
 var gravity_vc = Vector2(0, ProjectSettings.get_setting('physics/2d/default_gravity'))
-func get_path_collision(start_pos, start_vel, steps):
+func get_path_collision(start_pos, start_vel, high_resolution: bool = false):
 	'returns all points on the path based on the parameters'
 	
 	# delta should be very small so max length doesn't jitter
-	var delta = 1.0 / Engine.physics_ticks_per_second /5
+	var delta = 1.0 / Engine.physics_ticks_per_second
+	if high_resolution: delta /= 5
 	var space_state = get_viewport().find_world_2d().direct_space_state
 	var linear_damp = 0.0015
 
 	var path_points = [start_pos]
 	var current_pos = start_pos
 	var current_vel = start_vel
+
+	var steps = 200
+	if high_resolution: steps = 1000
 
 	for i in range(steps):
 		
@@ -46,7 +50,7 @@ func get_path_collision(start_pos, start_vel, steps):
 
 func get_path_max_length(start_pos, start_vel, max_length):
 
-	var full_points = get_path_collision(start_pos, start_vel, 500)
+	var full_points = get_path_collision(start_pos, start_vel, true)
 	var curr_point_idx = 0
 	var curr_point = full_points[curr_point_idx]
 	var max_points = []

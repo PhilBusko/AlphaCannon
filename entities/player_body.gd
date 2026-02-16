@@ -10,12 +10,16 @@ var bullets_shot = 0
 
 @onready var level_scene = get_tree().current_scene
 
-
 ################################################################################
 
-const SPEED = 130
 var is_moving = false 	# communicate from signal handler to physics-process
 var move_start_pos: Vector2 = Vector2.ZERO
+const MOVE_SPEED = 130
+
+var is_knockback = false 	# communicate from signal handler to physics-process
+var knockback_start_pos: Vector2 = Vector2.ZERO
+var knockback_dist = 0
+const KNOCKBACK_SPEED = 300
 
 func _physics_process(delta):
 
@@ -30,9 +34,15 @@ func _physics_process(delta):
 		#shoot_bullet()
 
 func stop_move():
-	velocity.x = move_toward(velocity.x, 0, SPEED)
+	'''subroutine for player_movement'''
+	velocity.x = move_toward(velocity.x, 0, MOVE_SPEED)
 	is_moving = false
 	move_start_pos = Vector2.ZERO
+
+func stop_knockback():
+	velocity.x = move_toward(velocity.x, 0, KNOCKBACK_SPEED)
+	is_knockback = false
+	knockback_start_pos = Vector2.ZERO
 
 func player_movement(delta):
 	
@@ -58,6 +68,25 @@ func player_movement(delta):
 
 		#else:
 			#print('regular move')
+
+	# knockback
+	if is_knockback:
+		
+		if global_position.distance_to(knockback_start_pos) >= knockback_dist:
+			#print('stop knockback')
+			stop_knockback()
+			
+		elif velocity.is_zero_approx():
+			#print('stuck')
+			stop_knockback()
+
+		elif ((global_position.x <= 30 and velocity.x < 0) or 
+			(global_position.x >= Utility.world_width - 30 and velocity.x > 0)):
+			#print('clamped')
+			stop_knockback()
+
+		#else:
+			#print('regular knockback')
 
 	# move after data updates
 	move_and_slide()
@@ -88,7 +117,7 @@ func player_aiming():
 ################################################################################
 
 func _on_ui_pressed(ui_type):
-	prints('player_body _on_ui_pressed', ui_type)
+	#prints('player_body _on_ui_pressed', ui_type)
 	
 	# these are "press buttons" so their code is united here
 	
@@ -149,16 +178,20 @@ func move_player(side):
 	if side == 'right': direction = Vector2.RIGHT
 	if side == 'left': direction = Vector2.LEFT
 
-	if direction != Vector2.ZERO:
-		is_moving = true
-		move_start_pos = global_position
-		velocity.x = direction.x * SPEED
+	is_moving = true
+	move_start_pos = global_position
+	velocity.x = direction.x * MOVE_SPEED
 
 ################################################################################
 
-func _process(_delta):
+var player_enabled = true
 
-	draw_aim_line()
+func _process(_delta):
+	
+	$GravityAim.clear_points()
+
+	if player_enabled:
+		draw_aim_line()
 
 func draw_aim_line():
 
@@ -217,8 +250,26 @@ func draw_aim_line():
 
 ################################################################################
 
-func _on_damaged(_damage, _collision_point):
-	pass
-	# player-ui also gets this emission
-	# where to store player current health?
-	# implement knocback here
+func _on_damaged(_damage, collision_point):
+	
+	# knockback moves the player
+	
+	var direction = Vector2.ZERO
+	if global_position.x < 100: 
+		direction = Vector2.RIGHT
+	elif global_position.x > Utility.world_width -100: 
+		direction = Vector2.LEFT
+	else: 
+		if collision_point.x < global_position.x:
+			direction = Vector2.RIGHT
+		else:
+			direction = Vector2.LEFT
+	direction.y = -1
+
+	is_knockback = true
+	knockback_start_pos = global_position
+	velocity = direction * KNOCKBACK_SPEED
+	knockback_dist = Utility.RNG.randi_range(80, 140)
+
+func _on_player_enabled(enabled_status):
+	player_enabled = enabled_status

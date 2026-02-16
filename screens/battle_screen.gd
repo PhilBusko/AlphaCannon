@@ -29,7 +29,7 @@ func _ready() -> void:
 	add_child(new_player_ui)
 	new_player_body.get_node('UIRemote').remote_path = new_player_ui.get_path()
 	new_player_ui.ui_pressed.connect(new_player_body._on_ui_pressed)
-
+	new_player_ui.player_enabled.connect(new_player_body._on_player_enabled)
 
 
 	# spawn enemy
@@ -47,7 +47,7 @@ func _ready() -> void:
 	new_enemy_body.actor_data.orientation = 'left'
 	if new_player_body.global_position.x > new_enemy_body.global_position.x:
 		new_enemy_body.actor_data.orientation = 'right'
-	
+
 	# the scene detects a hit and passes the info to bodies hit
 	self.player_damaged.connect(new_player_body._on_damaged)
 	self.player_damaged.connect(new_player_ui._on_damaged)
@@ -79,7 +79,7 @@ func _on_bullet_collided(collision_point, collision_body, shooter):
 
 	var has_underground = bodies_in_range.filter(func(bd): return 'Underground' in bd.name)
 	has_underground = true if has_underground.size() > 0 else false
-	
+
 	for bd in bodies_in_range:
 
 		if 'Enemy' in bd.name and bd == collision_body:
